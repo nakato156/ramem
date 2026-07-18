@@ -47,7 +47,8 @@ def _total_ram_gb() -> float | None:
 
         status = MemoryStatus()
         status.length = ctypes.sizeof(status)
-        if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+        windll = getattr(ctypes, "windll", None)
+        if windll is not None and windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
             return round(float(status.total_physical) / 1024**3, 2)
         return None
     if hasattr(os, "sysconf"):
