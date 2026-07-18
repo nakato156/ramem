@@ -52,14 +52,22 @@ Abrir un terminal nuevo después de guardar los secretos y ejecutar:
 ```bash
 git clone <URL_DEL_REPOSITORIO>
 cd ramem
-test -f .env || cp .env.example .env
+test -f ../.env || cp .env.example ../.env
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source "$HOME/.local/bin/env"
 uv sync --extra dev --extra training
 uv run ramem doctor
 ```
 
-Completar `HF_TOKEN` en ese `.env` si no fue inyectado como secreto. RaMem carga `.env` con
+La disposición recomendada en Lightning es:
+
+```text
+/home/zeus/content/.env
+/home/zeus/content/ramem/       # raíz Git del proyecto
+```
+
+Completar `HF_TOKEN` en el `.env` padre si no fue inyectado como secreto. RaMem busca `.env` en la
+raíz del repositorio y en sus directorios padres, y lo carga con
 `override=false`: los secretos definidos por Lightning tienen prioridad y nunca son reemplazados por
 el archivo. `ramem doctor` debe mostrar Python 3.12; la ausencia de GPU es correcta en esta fase CPU.
 
@@ -146,7 +154,7 @@ Cada ejecución conserva configuración resuelta, GPU, dtype y módulos LoRA rea
 ## 6. Reanudar un Studio
 
 ```bash
-cd ~/ramem  # o la ruta donde se clonó
+cd /home/zeus/content/ramem
 git pull --ff-only
 uv sync --extra dev --extra training
 uv run ramem doctor
@@ -154,6 +162,24 @@ uv run ramem doctor
 
 No repetir descargas si sus carpetas y `download_manifest.json` están presentes. Para actualizar un
 dataset se debe usar una ruta versionada nueva; nunca sobrescribir `data/raw`.
+
+## 7. Sincronización cotidiana por GitHub
+
+Desde el equipo local, después de validar y crear un commit:
+
+```bash
+git push origin main
+```
+
+En Lightning, antes de ejecutar cualquier trabajo:
+
+```bash
+cd /home/zeus/content/ramem
+git pull --ff-only origin main
+```
+
+No volver a transferir el proyecto con `scp`. Los datos y modelos permanecen únicamente en
+Lightning y están excluidos por `.gitignore`.
 
 ## Orden resumido
 
