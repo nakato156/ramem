@@ -113,10 +113,12 @@ uv run ramem doctor
 Ejecutar un entrenamiento corto con 64 filas reales y contexto 512:
 
 ```bash
-uv run ramem-train \
-  --config configs/training/gemma_1b_smoke_qlora.yaml \
-  --max-samples 64
+tmux new-session -d -s ramem-train './scripts/train/lightning_t4_smoke.sh'
+tmux attach -t ramem-train
 ```
+
+Para separarse sin detener el proceso: `Ctrl-b`, después `d`. El log persistente queda en
+`artifacts/training/t4-smoke.log` y puede seguirse con `tail -f`.
 
 Debe aparecer:
 
