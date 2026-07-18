@@ -31,10 +31,10 @@ else
   echo "Using existing immutable dataset at $RAW_ROOT/squad-es"
 fi
 
-if [[ ! -d "$PROCESSED_ROOT/grounded-qa-es-v1" ]]; then
+if [[ ! -d "$PROCESSED_ROOT/grounded-qa-es-v2" ]]; then
   uv run ramem-prepare
 else
-  echo "Using existing prepared dataset at $PROCESSED_ROOT/grounded-qa-es-v1"
+  echo "Using existing prepared dataset at $PROCESSED_ROOT/grounded-qa-es-v2"
 fi
 
 uv run ramem-train \

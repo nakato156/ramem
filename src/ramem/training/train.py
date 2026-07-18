@@ -31,6 +31,8 @@ class TrainConfig(BaseModel):
     eval_steps: int = Field(gt=0)
     save_total_limit: Literal[2] = 2
     resume_from_checkpoint: bool = True
+    max_train_samples: int | None = Field(default=None, gt=0)
+    max_eval_samples: int | None = Field(default=None, gt=0)
 
 
 def latest_checkpoint(output_dir: Path) -> Path | None:
@@ -92,7 +94,7 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
         config.model_id,
         token=token,
         device_map={"": 0},
-        torch_dtype=dtype,
+        dtype=dtype,
         quantization_config=quantization,
     )
     model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
@@ -104,10 +106,17 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
     dataset = load_from_disk(str(config.dataset_path))
     train_data = dataset["train"]
     validation_data = dataset["validation"]
-    if max_samples:
-        train_data = train_data.select(range(min(max_samples, len(train_data))))
-        validation_data = validation_data.select(
-            range(min(max(16, max_samples // 10), len(validation_data)))
+    sample_limit = max_samples or config.max_train_samples
+    if sample_limit:
+        train_data = train_data.shuffle(seed=config.seed).select(
+            range(min(sample_limit, len(train_data)))
+        )
+    eval_limit = config.max_eval_samples
+    if max_samples and eval_limit is None:
+        eval_limit = max(16, max_samples // 10)
+    if eval_limit:
+        validation_data = validation_data.shuffle(seed=config.seed).select(
+            range(min(eval_limit, len(validation_data)))
         )
     config.output_dir.mkdir(parents=True, exist_ok=True)
     checkpoint = latest_checkpoint(config.output_dir) if config.resume_from_checkpoint else None
@@ -115,7 +124,8 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
         "resolved_target_modules": targets,
         "gpu": torch.cuda.get_device_name(0),
         "compute_dtype": str(dtype),
-        "max_samples": max_samples,
+        "resolved_train_samples": len(train_data),
+        "resolved_eval_samples": len(validation_data),
         "resolved_resume_checkpoint": str(checkpoint) if checkpoint else None,
     }
     (config.output_dir / "resolved_config.json").write_text(
@@ -175,7 +185,7 @@ def main() -> None:
         "--config",
         type=Path,
         default=Path(
-            os.environ.get("RAMEM_TRAIN_CONFIG", "configs/training/gemma_1b_grounded_qlora.yaml")
+            os.environ.get("RAMEM_TRAIN_CONFIG", "configs/training/gemma_1b_t4_qlora.yaml")
         ),
     )
     parser.add_argument("--max-samples", type=int, default=None, help="Real-data smoke-test limit")

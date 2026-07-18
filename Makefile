@@ -28,4 +28,4 @@ smoke:
 	uv run ramem-train --config configs/training/gemma_1b_smoke_qlora.yaml --max-samples 64
 
 train:
-	uv run ramem-train --config configs/training/gemma_1b_grounded_qlora.yaml
+	uv run ramem-train --config configs/training/gemma_1b_t4_qlora.yaml

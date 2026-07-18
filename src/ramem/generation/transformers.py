@@ -44,7 +44,7 @@ class TransformersGenerator:
             token=token,
             device_map="auto",
             quantization_config=quantization,
-            torch_dtype="auto",
+            dtype="auto",
         )
         if config.adapter_path:
             from peft import PeftModel  # type: ignore[import-not-found]

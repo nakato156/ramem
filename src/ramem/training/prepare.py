@@ -32,7 +32,7 @@ def prepare_squad(source: Path, output: Path, validation_percent: int) -> dict[s
             continue
         prompt = (
             f"{SYSTEM_POLICY}\n\nEVIDENCIA:\n[D1] {row['context']}\n\n"
-            f"PREGUNTA:\n{row['question']}\n\nRESPUESTA:"
+            f"PREGUNTA:\n{row['question']}\n\nRESPUESTA:\n"
         )
         prepared = {"id": str(row["id"]), "prompt": prompt, "completion": f"{answers[0]} [D1]"}
         target = (
@@ -73,7 +73,7 @@ def main() -> None:
     raw_root = Path(os.environ.get("RAMEM_RAW_DATA_DIR", "data/raw"))
     processed_root = Path(os.environ.get("RAMEM_PROCESSED_DATA_DIR", "data/processed"))
     parser.add_argument("--source", type=Path, default=raw_root / "squad-es")
-    parser.add_argument("--output", type=Path, default=processed_root / "grounded-qa-es-v1")
+    parser.add_argument("--output", type=Path, default=processed_root / "grounded-qa-es-v2")
     parser.add_argument("--validation-percent", type=int, default=5)
     args = parser.parse_args()
     if not 1 <= args.validation_percent <= 20:

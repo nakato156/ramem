@@ -1,5 +1,5 @@
 model_id: google/gemma-3-1b-it
-dataset_path: data/processed/grounded-qa-es-v1
+dataset_path: data/processed/grounded-qa-es-v2
 output_dir: artifacts/training/gemma-1b-grounded-seed42
 seed: 42
 max_sequence_length: 4096
@@ -16,3 +16,5 @@ save_steps: 100
 eval_steps: 100
 save_total_limit: 2
 resume_from_checkpoint: true
+max_train_samples: null
+max_eval_samples: 512
