@@ -14,7 +14,9 @@ DATASETS: dict[str, dict[str, Any]] = {
         "config": "v1.1.0",
         "license": "cc-by-4.0",
         "splits": ("train",),
-        "mode": "datasets",
+        "mode": "parquet",
+        "revision_ref": "refs/convert/parquet",
+        "files": ("v1.1.0/train/0000.parquet",),
     },
     "miracl-es": {
         "repo_id": "miracl/miracl",
@@ -51,7 +53,11 @@ def _license_value(card_data: Any) -> str:
 def download_dataset(name: str, output_root: Path) -> dict[str, Any]:
     try:
         from datasets import DatasetDict, load_dataset  # type: ignore[import-not-found]
-        from huggingface_hub import HfApi, snapshot_download  # type: ignore[import-not-found]
+        from huggingface_hub import (  # type: ignore[import-not-found]
+            HfApi,
+            hf_hub_download,
+            snapshot_download,
+        )
     except ImportError as error:
         raise RuntimeError("Run `uv sync --extra training` before downloading data") from error
 
@@ -65,7 +71,12 @@ def download_dataset(name: str, output_root: Path) -> dict[str, Any]:
         raise RuntimeError(
             f"License mismatch for {repo_id}: expected {expected_license}, got {actual_license!r}"
         )
-    revision = str(info.sha)
+    source_revision = str(info.sha)
+    revision = source_revision
+    if spec["mode"] == "parquet":
+        revision = str(
+            HfApi(token=token).dataset_info(repo_id, revision=str(spec["revision_ref"])).sha
+        )
     destination = output_root / name
     if destination.exists():
         raise FileExistsError(f"{destination} already exists; raw datasets are immutable")
@@ -82,6 +93,19 @@ def download_dataset(name: str, output_root: Path) -> dict[str, Any]:
                 token=token,
             )
         loaded.save_to_disk(destination)
+    elif spec["mode"] == "parquet":
+        parquet_files = [
+            hf_hub_download(
+                repo_id=repo_id,
+                repo_type="dataset",
+                filename=str(filename),
+                revision=revision,
+                token=token,
+            )
+            for filename in spec["files"]
+        ]
+        loaded = load_dataset("parquet", data_files={"train": parquet_files})
+        loaded.save_to_disk(destination)
     else:
         snapshot_download(
             repo_id=repo_id,
@@ -95,6 +119,7 @@ def download_dataset(name: str, output_root: Path) -> dict[str, Any]:
         "name": name,
         "repo_id": repo_id,
         "revision": revision,
+        "source_revision": source_revision,
         "license": actual_license,
         "downloaded_at": datetime.now(UTC).isoformat(),
         "tree_sha256": _tree_hash(destination),
