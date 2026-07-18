@@ -4,7 +4,7 @@ import argparse
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
@@ -29,6 +29,23 @@ class TrainConfig(BaseModel):
     logging_steps: int = Field(gt=0)
     save_steps: int = Field(gt=0)
     eval_steps: int = Field(gt=0)
+    save_total_limit: Literal[2] = 2
+    resume_from_checkpoint: bool = True
+
+
+def latest_checkpoint(output_dir: Path) -> Path | None:
+    checkpoints: list[tuple[int, Path]] = []
+    if not output_dir.exists():
+        return None
+    for candidate in output_dir.glob("checkpoint-*"):
+        if not candidate.is_dir():
+            continue
+        try:
+            step = int(candidate.name.removeprefix("checkpoint-"))
+        except ValueError:
+            continue
+        checkpoints.append((step, candidate))
+    return max(checkpoints, default=(0, None), key=lambda item: item[0])[1]
 
 
 def _target_modules(model: Any) -> list[str]:
@@ -93,11 +110,13 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
             range(min(max(16, max_samples // 10), len(validation_data)))
         )
     config.output_dir.mkdir(parents=True, exist_ok=True)
+    checkpoint = latest_checkpoint(config.output_dir) if config.resume_from_checkpoint else None
     resolved = config.model_dump(mode="json") | {
         "resolved_target_modules": targets,
         "gpu": torch.cuda.get_device_name(0),
         "compute_dtype": str(dtype),
         "max_samples": max_samples,
+        "resolved_resume_checkpoint": str(checkpoint) if checkpoint else None,
     }
     (config.output_dir / "resolved_config.json").write_text(
         json.dumps(resolved, indent=2), encoding="utf-8"
@@ -124,6 +143,7 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
         optim="paged_adamw_8bit",
         logging_steps=config.logging_steps,
         save_steps=config.save_steps,
+        save_total_limit=config.save_total_limit,
         eval_steps=config.eval_steps,
         eval_strategy="steps",
         save_strategy="steps",
@@ -142,7 +162,9 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
         processing_class=tokenizer,
         peft_config=peft_config,
     )
-    trainer.train()
+    if checkpoint:
+        print(f"Resuming training from {checkpoint}")
+    trainer.train(resume_from_checkpoint=str(checkpoint) if checkpoint else None)
     trainer.save_model(str(config.output_dir / "adapter-final"))
     tokenizer.save_pretrained(config.output_dir / "adapter-final")
 

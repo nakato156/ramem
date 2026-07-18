@@ -128,6 +128,11 @@ artifacts/training/gemma-1b-smoke/adapter-final/
 Revisar que `resolved_target_modules` no esté vacío y que el entrenamiento/evaluación terminen sin
 NaN ni OOM. El código obtiene los nombres de módulos del checkpoint real; no los asume ciegamente.
 
+El trainer conserva como máximo los dos checkpoints más recientes. Cada checkpoint incluye el
+estado necesario para reanudar el optimizador, scheduler, pasos y épocas. Si el comando se vuelve a
+ejecutar con el mismo `output_dir`, detecta automáticamente el `checkpoint-N` numéricamente mayor y
+continúa desde allí. No borrar esos directorios ni cambiar `output_dir` al reanudar.
+
 ## 4. Entrenamiento completo en L4
 
 Detener la T4 y cambiar a una **L4 de 24 GB**. La configuración completa usa contexto 4096, QLoRA
