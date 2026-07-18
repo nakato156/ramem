@@ -1,0 +1,16 @@
+model_id: google/gemma-3-1b-it
+dataset_path: data/processed/grounded-qa-es-v1
+output_dir: artifacts/training/gemma-1b-grounded-seed42
+seed: 42
+max_sequence_length: 4096
+per_device_batch_size: 1
+gradient_accumulation_steps: 32
+epochs: 2
+learning_rate: 0.0001
+lora_rank: 32
+lora_alpha: 64
+lora_dropout: 0.05
+warmup_ratio: 0.05
+logging_steps: 5
+save_steps: 100
+eval_steps: 100

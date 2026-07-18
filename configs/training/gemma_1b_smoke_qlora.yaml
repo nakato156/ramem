@@ -1,0 +1,16 @@
+model_id: google/gemma-3-1b-it
+dataset_path: data/processed/grounded-qa-es-v1
+output_dir: artifacts/training/gemma-1b-smoke
+seed: 42
+max_sequence_length: 512
+per_device_batch_size: 1
+gradient_accumulation_steps: 4
+epochs: 1
+learning_rate: 0.0001
+lora_rank: 16
+lora_alpha: 32
+lora_dropout: 0.05
+warmup_ratio: 0.05
+logging_steps: 1
+save_steps: 20
+eval_steps: 20

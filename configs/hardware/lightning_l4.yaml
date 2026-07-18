@@ -1,0 +1,6 @@
+platform: lightning_ai
+machine: L4
+vram_gb: 24
+purpose: gemma_1b_grounded_qlora
+precision: bf16
+recommended_max_sequence_length: 4096

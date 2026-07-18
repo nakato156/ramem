@@ -1,0 +1,4 @@
+profile: edge
+context_tokens: 2048
+max_ram_gb: 6
+embedding_dimension: 256

@@ -1,0 +1,6 @@
+platform: lightning_ai
+machine: T4
+vram_gb: 16
+purpose: qlora_smoke_and_controller
+precision: fp16
+recommended_max_sequence_length: 1024

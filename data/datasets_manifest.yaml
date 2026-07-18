@@ -1,0 +1,113 @@
+version: 1
+policy: deny_by_default
+datasets:
+  - name: MIRACL-es
+    version: resolved_and_recorded_at_download
+    url: https://huggingface.co/datasets/miracl/miracl
+    license: Apache-2.0
+    license_status: verified
+    authorized_splits: [train, dev]
+    sha256: null
+    function: train_validation_test
+    blocked: false
+    notes: Downloader records the immutable HF revision and local tree SHA-256; test is not downloaded.
+  - name: MIRACL-corpus-es
+    version: resolved_and_recorded_at_download
+    url: https://huggingface.co/datasets/miracl/miracl-corpus
+    license: Apache-2.0
+    license_status: verified
+    authorized_splits: [train]
+    sha256: null
+    function: retrieval_corpus
+    blocked: false
+    notes: Downloader selects only the Spanish corpus and records revision and tree SHA-256.
+  - name: MessIRve
+    version: unpinned
+    url: https://huggingface.co/datasets/spanish-ir/messirve
+    license: unknown
+    license_status: unverified
+    authorized_splits: [train]
+    sha256: null
+    function: train
+    blocked: true
+    notes: Optional retrieval training source only if MIRACL is insufficient.
+  - name: SQuAD-es
+    version: v1.1.0_resolved_and_recorded_at_download
+    url: https://huggingface.co/datasets/ccasimiro/squad_es
+    license: CC-BY-4.0
+    license_status: verified
+    authorized_splits: [train]
+    sha256: null
+    function: train
+    blocked: false
+    notes: Only train is downloaded; a deterministic development slice is derived from train.
+  - name: MLQA-es
+    version: unpinned
+    url: https://huggingface.co/datasets/facebook/mlqa
+    license: unknown
+    license_status: unverified
+    authorized_splits: [test, validation]
+    sha256: null
+    function: test_only
+    blocked: true
+    notes: Spanish evaluation only.
+  - name: XQuAD-es
+    version: unpinned
+    url: https://huggingface.co/datasets/google/xquad
+    license: CC-BY-SA-4.0
+    license_status: unverified
+    authorized_splits: [validation]
+    sha256: null
+    function: test_only
+    blocked: true
+    notes: Cross-lingual evaluation only.
+  - name: CRAG
+    version: unpinned
+    url: https://github.com/facebookresearch/CRAG
+    license: unknown
+    license_status: unverified
+    authorized_splits: [evaluation]
+    sha256: null
+    function: test_only
+    blocked: true
+    notes: Freeze web results with timestamp before reproducible evaluation.
+  - name: LoCoMo
+    version: unpinned
+    url: https://github.com/snap-research/locomo
+    license: unknown
+    license_status: unverified
+    authorized_splits: [evaluation]
+    sha256: null
+    function: test_only
+    blocked: true
+    notes: Use for evaluation unless an official, separate train split is verified.
+  - name: LongMemEval
+    version: unpinned
+    url: https://github.com/xiaowu0162/LongMemEval
+    license: unknown
+    license_status: unverified
+    authorized_splits: [test]
+    sha256: null
+    function: test_only
+    blocked: true
+    notes: Never use for training.
+  - name: RAGTruth
+    version: unpinned
+    url: https://github.com/ParticleMedia/RAGTruth
+    license: unknown
+    license_status: unverified
+    authorized_splits: [train, test]
+    sha256: null
+    function: train_validation_test
+    blocked: true
+    notes: Official train may train the verifier; official test remains reserved.
+  - name: BEIR-subset
+    version: unpinned
+    url: https://github.com/beir-cellar/beir
+    license: per_subdataset
+    license_status: unverified
+    authorized_splits: [test]
+    sha256: null
+    function: test_only
+    blocked: true
+    notes: Select two or three small domains and verify each underlying license.

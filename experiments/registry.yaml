@@ -1,0 +1,20 @@
+version: 1
+experiments:
+  - id: E00
+    status: blocked_pending_real_dev_data
+    description: Evaluator sanity checks using reviewed, source-traceable development rows
+  - id: E01
+    status: blocked_pending_data_review
+    description: Isolated model baseline
+  - id: E02
+    status: skeleton_ready
+    description: Lexical vs dense vs hybrid retrieval
+  - id: E03
+    status: planned
+    description: Embedding dimension ablation
+  - id: E04
+    status: planned
+    description: Chunking ablation
+  - id: E05
+    status: planned
+    description: Top-k and context-budget ablation

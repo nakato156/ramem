@@ -1,0 +1,6 @@
+mode: hybrid
+lexical_k: 50
+dense_k: 50
+final_k: 5
+rrf_k: 60
+embedding_dimension: 256
