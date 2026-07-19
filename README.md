@@ -31,6 +31,10 @@ uv run ramem-prepare
 uv run ramem-train --config configs/training/gemma_1b_smoke_qlora.yaml --max-samples 64
 ```
 
+After training and internal comparison, follow
+[EXTERNAL_EVALUATION.md](docs/EXTERNAL_EVALUATION.md) for the locked MLQA development evaluation
+and the separately reserved XQuAD final holdout.
+
 Gemma is gated on Hugging Face. Accept Google's usage terms for both model repositories and add
 `HF_TOKEN` as a Lightning secret before starting.
 

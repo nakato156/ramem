@@ -39,5 +39,5 @@ def authorize_dataset(entry: DatasetEntry, split: str, purpose: str) -> None:
         raise PermissionError(f"dataset {entry.name} is blocked pending license/hash verification")
     if split not in entry.authorized_splits:
         raise PermissionError(f"split {split!r} is not authorized for {entry.name}")
-    if purpose == "train" and entry.function == "test_only":
-        raise PermissionError(f"dataset {entry.name} is test-only")
+    if purpose == "train" and entry.function not in {"train", "train_validation_test"}:
+        raise PermissionError(f"dataset {entry.name} is not authorized for training")

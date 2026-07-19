@@ -39,6 +39,7 @@ class AnswerMetrics:
     exact_match: float
     token_f1: float
     cites_d1: float
+    valid_citations: float
 
 
 _CITATION = re.compile(r"\s*\[D1\]\s*", re.IGNORECASE)
@@ -70,10 +71,14 @@ def token_f1(prediction: str, reference: str) -> float:
 
 
 def score_answer(prediction: str, reference: str) -> AnswerMetrics:
+    citation_ids = [
+        citation.upper() for citation in re.findall(r"\[(D\d+)\]", prediction, re.IGNORECASE)
+    ]
     return AnswerMetrics(
         exact_match=float(normalize_answer(prediction) == normalize_answer(reference)),
         token_f1=token_f1(prediction, reference),
         cites_d1=float(bool(re.search(r"\[D1\]", prediction, re.IGNORECASE))),
+        valid_citations=float(bool(citation_ids) and set(citation_ids) == {"D1"}),
     )
 
 
@@ -135,7 +140,14 @@ def _evaluate_variant(
 ) -> dict[str, Any]:
     model, tokenizer, torch = _load_model(config.model_id, adapter_path, token)
     output_path = config.output_dir / f"predictions-{name}.jsonl"
-    totals = Counter({"exact_match": 0.0, "token_f1": 0.0, "cites_d1": 0.0})
+    totals = Counter(
+        {
+            "exact_match": 0.0,
+            "token_f1": 0.0,
+            "cites_d1": 0.0,
+            "valid_citations": 0.0,
+        }
+    )
     latencies: list[float] = []
     started = time.perf_counter()
     with output_path.open("w", encoding="utf-8") as handle, torch.inference_mode():
@@ -166,8 +178,14 @@ def _evaluate_variant(
                     {
                         "index": index,
                         "id": str(row["id"]),
+                        "prompt": str(row["prompt"]),
                         "prediction": prediction,
                         "reference": reference,
+                        "input_tokens": int(inputs["input_ids"].shape[-1]),
+                        "input_at_max_length": bool(
+                            inputs["input_ids"].shape[-1] == config.max_input_length
+                        ),
+                        "generated_tokens": int(generated.shape[-1]),
                         "latency_seconds": latency,
                         **metrics.__dict__,
                     },
@@ -175,6 +193,7 @@ def _evaluate_variant(
                 )
                 + "\n"
             )
+            handle.flush()
             if (index + 1) % 25 == 0:
                 print(f"{name}: {index + 1}/{len(rows)}")
     count = len(rows)
@@ -217,9 +236,7 @@ def evaluate(config: EvaluationConfig) -> dict[str, Any]:
             package: importlib.metadata.version(package)
             for package in ("torch", "transformers", "peft", "datasets", "bitsandbytes")
         },
-        "preparation_manifest_sha256": _sha256(
-            config.dataset_path / "preparation_manifest.json"
-        ),
+        "preparation_manifest_sha256": _sha256(config.dataset_path / "preparation_manifest.json"),
         "adapter_sha256": _sha256(config.adapter_path / "adapter_model.safetensors"),
     }
     (config.output_dir / "resolved_config.json").write_text(
@@ -239,20 +256,22 @@ def evaluate(config: EvaluationConfig) -> dict[str, Any]:
     }
     results["delta_adapter_minus_base"] = {
         key: results["adapter"][key] - results["base"][key]
-        for key in ("exact_match", "token_f1", "cites_d1", "mean_latency_seconds")
+        for key in (
+            "exact_match",
+            "token_f1",
+            "cites_d1",
+            "valid_citations",
+            "mean_latency_seconds",
+        )
     }
-    (config.output_dir / "summary.json").write_text(
-        json.dumps(results, indent=2), encoding="utf-8"
-    )
+    (config.output_dir / "summary.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
     print(json.dumps(results, indent=2))
     return results
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Compare base Gemma against a RaMem adapter")
-    parser.add_argument(
-        "--config", type=Path, default=Path("configs/evaluation/gemma_1b_t4.yaml")
-    )
+    parser.add_argument("--config", type=Path, default=Path("configs/evaluation/gemma_1b_t4.yaml"))
     args = parser.parse_args()
     config = EvaluationConfig.model_validate(
         yaml.safe_load(args.config.read_text(encoding="utf-8"))

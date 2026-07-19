@@ -44,6 +44,8 @@ ramem-prepare = "ramem.training.prepare:main"
 ramem-train = "ramem.training.train:main"
 ramem-evaluate = "ramem.evaluation.generation:main"
 ramem-export = "ramem.training.export:main"
+ramem-prepare-external = "ramem.evaluation.prepare:main"
+ramem-analyze-evaluation = "ramem.evaluation.analysis:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ramem"]

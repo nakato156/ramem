@@ -1,0 +1,8 @@
+model_id: google/gemma-3-1b-it
+adapter_path: artifacts/training/gemma-1b-t4-seed42/adapter-final
+dataset_path: data/processed/mlqa-es-grounded-dev-v1
+output_dir: artifacts/evaluation/mlqa-es-external-dev-seed42
+seed: 42
+max_samples: 500
+max_input_length: 1024
+max_new_tokens: 64

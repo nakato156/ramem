@@ -83,9 +83,7 @@ def export_merged(config: ExportConfig) -> dict[str, Any]:
         },
     }
     if config.evaluation_summary and config.evaluation_summary.is_file():
-        manifest["evaluation"] = json.loads(
-            config.evaluation_summary.read_text(encoding="utf-8")
-        )
+        manifest["evaluation"] = json.loads(config.evaluation_summary.read_text(encoding="utf-8"))
     (config.output_dir / "ramem_export_manifest.json").write_text(
         json.dumps(manifest, indent=2), encoding="utf-8"
     )
@@ -95,9 +93,7 @@ def export_merged(config: ExportConfig) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Merge a RaMem LoRA adapter for inference")
-    parser.add_argument(
-        "--config", type=Path, default=Path("configs/export/gemma_1b_ramem.yaml")
-    )
+    parser.add_argument("--config", type=Path, default=Path("configs/export/gemma_1b_ramem.yaml"))
     args = parser.parse_args()
     config = ExportConfig.model_validate(yaml.safe_load(args.config.read_text(encoding="utf-8")))
     export_merged(config)

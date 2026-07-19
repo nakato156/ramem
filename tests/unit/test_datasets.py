@@ -16,4 +16,11 @@ def test_test_only_dataset_cannot_train() -> None:
     manifest = load_manifest(Path("data/datasets_manifest.yaml"))
     dataset = next(item for item in manifest.datasets if item.name == "MLQA-es")
     with pytest.raises(PermissionError):
-        authorize_dataset(dataset, "test", "train")
+        authorize_dataset(dataset, "validation", "train")
+
+
+def test_mlqa_validation_is_authorized_for_evaluation() -> None:
+    manifest = load_manifest(Path("data/datasets_manifest.yaml"))
+    dataset = next(item for item in manifest.datasets if item.name == "MLQA-es")
+
+    authorize_dataset(dataset, "validation", "evaluate")

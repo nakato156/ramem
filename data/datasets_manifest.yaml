@@ -42,25 +42,25 @@ datasets:
     blocked: false
     notes: Only train is downloaded; a deterministic development slice is derived from train.
   - name: MLQA-es
-    version: unpinned
+    version: refs/convert/parquet_resolved_and_recorded_at_download
     url: https://huggingface.co/datasets/facebook/mlqa
-    license: unknown
-    license_status: unverified
-    authorized_splits: [test, validation]
-    sha256: null
-    function: test_only
-    blocked: true
-    notes: Spanish evaluation only.
+    license: CC-BY-SA-3.0
+    license_status: verified
+    authorized_splits: [validation]
+    sha256: recorded_in_data_raw_download_manifest
+    function: development_only
+    blocked: false
+    notes: Only mlqa.es.es validation is downloaded for external development evaluation; official test remains inaccessible to the automated workflow.
   - name: XQuAD-es
-    version: unpinned
+    version: refs/convert/parquet_resolved_and_recorded_at_download
     url: https://huggingface.co/datasets/google/xquad
     license: CC-BY-SA-4.0
-    license_status: unverified
+    license_status: verified
     authorized_splits: [validation]
-    sha256: null
+    sha256: recorded_in_data_raw_download_manifest
     function: test_only
     blocked: true
-    notes: Cross-lingual evaluation only.
+    notes: Reserved one-time Spanish final holdout; downloader requires --release-test and the script requires RAMEM_RELEASE_CANDIDATE_FROZEN=yes.
   - name: CRAG
     version: unpinned
     url: https://github.com/facebookresearch/CRAG

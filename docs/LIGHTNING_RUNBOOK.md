@@ -182,6 +182,28 @@ tail -f artifacts/export/merge-adapter.log
 La configuración `configs/inference/gemma_1b_ramem.yaml` carga la exportación fusionada en 4 bits
 para inferencia. El adaptador original se conserva y nunca es reemplazado por la exportación.
 
+## 5.2. Evaluación externa de desarrollo
+
+MLQA `mlqa.es.es` validation es el conjunto externo de desarrollo. No se descarga su split test.
+Al volver a encender una T4, ejecutar una única sesión persistente:
+
+```bash
+cd /teamspace/studios/this_studio/ramem
+git pull --ff-only origin main
+tmux new-session -d -s ramem-external-eval \
+  'bash scripts/evaluate/lightning_t4_external_dev.sh'
+tail -f artifacts/evaluation/t4-external-dev.log
+```
+
+El script descarga las 500 filas de validation desde Parquet fijado a una revisión inmutable,
+comprueba que no haya contextos o preguntas idénticos a SQuAD-es train, evalúa base y adaptador en
+el mismo orden y calcula intervalos de confianza mediante bootstrap pareado. La decisión y los 25
+peores casos quedan en `artifacts/evaluation/mlqa-es-external-dev-seed42/`.
+
+No ejecutar todavía `lightning_t4_final_holdout.sh`. XQuAD-es queda bloqueado hasta congelar código,
+pesos, prompt y umbrales; requiere además `RAMEM_RELEASE_CANDIDATE_FROZEN=yes` y no permite repetir
+ni sobrescribir el resultado.
+
 ## 6. Reanudar un Studio
 
 ```bash

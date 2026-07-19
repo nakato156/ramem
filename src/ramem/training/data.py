@@ -16,7 +16,26 @@ DATASETS: dict[str, dict[str, Any]] = {
         "splits": ("train",),
         "mode": "parquet",
         "revision_ref": "refs/convert/parquet",
-        "files": ("v1.1.0/train/0000.parquet",),
+        "files": {"train": ("v1.1.0/train/0000.parquet",)},
+    },
+    "mlqa-es-dev": {
+        "repo_id": "facebook/mlqa",
+        "config": "mlqa.es.es",
+        "license": "cc-by-sa-3.0",
+        "splits": ("validation",),
+        "mode": "parquet",
+        "revision_ref": "refs/convert/parquet",
+        "files": {"validation": ("mlqa.es.es/validation/0000.parquet",)},
+    },
+    "xquad-es-final": {
+        "repo_id": "google/xquad",
+        "config": "xquad.es",
+        "license": "cc-by-sa-4.0",
+        "splits": ("validation",),
+        "mode": "parquet",
+        "revision_ref": "refs/convert/parquet",
+        "files": {"validation": ("xquad.es/validation/0000.parquet",)},
+        "release_only": True,
     },
     "miracl-es": {
         "repo_id": "miracl/miracl",
@@ -50,7 +69,13 @@ def _license_value(card_data: Any) -> str:
     return str(value or "").casefold()
 
 
-def download_dataset(name: str, output_root: Path) -> dict[str, Any]:
+def download_dataset(name: str, output_root: Path, *, release_test: bool = False) -> dict[str, Any]:
+    spec = DATASETS[name]
+    if spec.get("release_only") and not release_test:
+        raise PermissionError(
+            f"{name} is a reserved final holdout; pass --release-test only after "
+            "freezing the candidate"
+        )
     try:
         from datasets import DatasetDict, load_dataset  # type: ignore[import-not-found]
         from huggingface_hub import (  # type: ignore[import-not-found]
@@ -61,7 +86,6 @@ def download_dataset(name: str, output_root: Path) -> dict[str, Any]:
     except ImportError as error:
         raise RuntimeError("Run `uv sync --extra training` before downloading data") from error
 
-    spec = DATASETS[name]
     repo_id = str(spec["repo_id"])
     token = os.environ.get("HF_TOKEN")
     info = HfApi(token=token).dataset_info(repo_id)
@@ -94,17 +118,20 @@ def download_dataset(name: str, output_root: Path) -> dict[str, Any]:
             )
         loaded.save_to_disk(destination)
     elif spec["mode"] == "parquet":
-        parquet_files = [
-            hf_hub_download(
-                repo_id=repo_id,
-                repo_type="dataset",
-                filename=str(filename),
-                revision=revision,
-                token=token,
-            )
-            for filename in spec["files"]
-        ]
-        loaded = load_dataset("parquet", data_files={"train": parquet_files})
+        parquet_files = {
+            str(split): [
+                hf_hub_download(
+                    repo_id=repo_id,
+                    repo_type="dataset",
+                    filename=str(filename),
+                    revision=revision,
+                    token=token,
+                )
+                for filename in filenames
+            ]
+            for split, filenames in spec["files"].items()
+        }
+        loaded = load_dataset("parquet", data_files=parquet_files)
         loaded.save_to_disk(destination)
     else:
         snapshot_download(
@@ -137,9 +164,24 @@ def main() -> None:
     parser.add_argument(
         "--output", type=Path, default=Path(os.environ.get("RAMEM_RAW_DATA_DIR", "data/raw"))
     )
+    parser.add_argument(
+        "--release-test",
+        action="store_true",
+        help="Permit an explicitly reserved final holdout after the candidate is frozen",
+    )
     args = parser.parse_args()
-    names = tuple(DATASETS) if args.dataset == "all" else (args.dataset,)
-    records = [download_dataset(name, args.output) for name in names]
+    names = (
+        tuple(
+            name
+            for name, spec in DATASETS.items()
+            if args.release_test or not spec.get("release_only")
+        )
+        if args.dataset == "all"
+        else (args.dataset,)
+    )
+    records = [
+        download_dataset(name, args.output, release_test=args.release_test) for name in names
+    ]
     manifest_path = args.output / "download_manifest.json"
     existing: list[dict[str, Any]] = []
     if manifest_path.exists():
