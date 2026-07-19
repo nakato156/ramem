@@ -42,6 +42,7 @@ ramem = "ramem.cli.app:app"
 ramem-download = "ramem.training.data:main"
 ramem-prepare = "ramem.training.prepare:main"
 ramem-train = "ramem.training.train:main"
+ramem-evaluate = "ramem.evaluation.generation:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ramem"]

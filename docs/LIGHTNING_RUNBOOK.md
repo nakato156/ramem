@@ -158,6 +158,20 @@ La primera ejecución usa seed 42. Después de validar calidad y costo, duplicar
 seeds `13` y `2026`, cambiando también `output_dir`. No reutilizar el mismo directorio entre seeds.
 Cada ejecución conserva configuración resuelta, GPU, dtype y módulos LoRA reales.
 
+## 5.1. Evaluación pareada base vs. adaptador
+
+Antes de gastar créditos en nuevas semillas, comparar el modelo base y el adaptador sobre las
+mismas 256 filas de validación, con decodificación determinista:
+
+```bash
+tmux new-session -d -s ramem-eval 'bash scripts/evaluate/lightning_t4_compare.sh'
+tail -f artifacts/evaluation/t4-compare.log
+```
+
+El resumen queda en `artifacts/evaluation/gemma-1b-t4-seed42/summary.json`; las predicciones base y
+adaptadas se conservan como JSONL para revisión de errores. Exact match y F1 ignoran la marca de
+citación al medir el contenido, mientras `cites_d1` verifica por separado el cumplimiento de `[D1]`.
+
 ## 6. Reanudar un Studio
 
 ```bash
