@@ -25,7 +25,8 @@ class TransformersGenerator:
             ) from error
 
         token = __import__("os").environ.get("HF_TOKEN")
-        if not token:
+        model_is_local = Path(config.model_id).exists()
+        if not token and not model_is_local:
             raise RuntimeError("HF_TOKEN is required to download the gated Gemma checkpoint")
         quantization: Any = None
         if config.load_in_4bit:

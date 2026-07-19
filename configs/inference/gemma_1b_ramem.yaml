@@ -1,0 +1,21 @@
+version: 1
+retrieval:
+  mode: hybrid
+  lexical_k: 20
+  dense_k: 20
+  final_k: 5
+  rrf_k: 60
+  embedding_dimension: 256
+context:
+  token_budget: 1024
+  chars_per_token: 4
+generation:
+  provider: transformers
+  model_id: artifacts/export/gemma-1b-ramem-seed42
+  adapter_path: null
+  load_in_4bit: true
+  max_new_tokens: 64
+storage:
+  index_path: artifacts/ramem.sqlite3
+telemetry:
+  traces_dir: artifacts/traces

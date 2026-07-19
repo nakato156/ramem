@@ -172,6 +172,16 @@ El resumen queda en `artifacts/evaluation/gemma-1b-t4-seed42/summary.json`; las 
 adaptadas se conservan como JSONL para revisión de errores. Exact match y F1 ignoran la marca de
 citación al medir el contenido, mientras `cites_d1` verifica por separado el cumplimiento de `[D1]`.
 
+Si el adaptador supera al modelo base, fusionarlo de forma inmutable en pesos safetensors FP16:
+
+```bash
+tmux new-session -d -s ramem-export 'bash scripts/export/lightning_merge_adapter.sh'
+tail -f artifacts/export/merge-adapter.log
+```
+
+La configuración `configs/inference/gemma_1b_ramem.yaml` carga la exportación fusionada en 4 bits
+para inferencia. El adaptador original se conserva y nunca es reemplazado por la exportación.
+
 ## 6. Reanudar un Studio
 
 ```bash
