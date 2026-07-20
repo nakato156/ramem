@@ -196,7 +196,7 @@ tail -f artifacts/evaluation/t4-external-dev.log
 ```
 
 El script descarga las 500 filas de validation desde Parquet fijado a una revisión inmutable,
-comprueba que no haya contextos o preguntas idénticos a SQuAD-es train, evalúa base y adaptador en
+comprueba que no haya contextos ni pares contexto-pregunta idénticos a SQuAD-es train, evalúa base y adaptador en
 el mismo orden y calcula intervalos de confianza mediante bootstrap pareado. La decisión y los 25
 peores casos quedan en `artifacts/evaluation/mlqa-es-external-dev-seed42/`.
 

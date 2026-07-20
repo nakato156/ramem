@@ -15,15 +15,20 @@ def _normalized_hash(text: str) -> str:
     return hashlib.sha256(normalized.encode()).hexdigest()
 
 
-def _training_hashes(training_source: Path) -> tuple[set[str], set[str]]:
+def _has_blocking_overlap(*, contexts: int, pairs: int) -> bool:
+    return contexts > 0 or pairs > 0
+
+
+def _training_hashes(training_source: Path) -> tuple[set[str], set[str], set[str]]:
     from datasets import load_from_disk  # type: ignore[import-not-found]
 
     if not training_source.exists():
-        return set(), set()
+        return set(), set(), set()
     rows = load_from_disk(str(training_source))["train"]
     contexts = {_normalized_hash(str(row["context"])) for row in rows}
     questions = {_normalized_hash(str(row["question"])) for row in rows}
-    return contexts, questions
+    pairs = {_normalized_hash(f"{row['context']}\n{row['question']}") for row in rows}
+    return contexts, questions, pairs
 
 
 def _download_record(source: Path) -> dict[str, Any] | None:
@@ -56,11 +61,13 @@ def prepare_external_qa(
         raise KeyError(f"split {source_split!r} is absent from {source}")
     training_contexts: set[str] = set()
     training_questions: set[str] = set()
+    training_pairs: set[str] = set()
     if training_source is not None:
-        training_contexts, training_questions = _training_hashes(training_source)
+        training_contexts, training_questions, training_pairs = _training_hashes(training_source)
     rows: list[dict[str, str]] = []
     context_overlap = 0
     question_overlap = 0
+    pair_overlap = 0
     for row in raw[source_split]:
         answers = row["answers"]["text"]
         if not answers:
@@ -69,6 +76,7 @@ def prepare_external_qa(
         question = str(row["question"])
         context_overlap += int(_normalized_hash(context) in training_contexts)
         question_overlap += int(_normalized_hash(question) in training_questions)
+        pair_overlap += int(_normalized_hash(f"{context}\n{question}") in training_pairs)
         prompt = (
             f"{SYSTEM_POLICY}\n\nEVIDENCIA:\n[D1] {context}\n\n"
             f"PREGUNTA:\n{question}\n\nRESPUESTA:\n"
@@ -80,10 +88,10 @@ def prepare_external_qa(
                 "completion": f"{answers[0]} [D1]",
             }
         )
-    if context_overlap or question_overlap:
+    if _has_blocking_overlap(contexts=context_overlap, pairs=pair_overlap):
         raise RuntimeError(
             "External evaluation overlaps training data exactly: "
-            f"contexts={context_overlap}, questions={question_overlap}"
+            f"contexts={context_overlap}, pairs={pair_overlap}"
         )
     output.parent.mkdir(parents=True, exist_ok=True)
     DatasetDict({"validation": Dataset.from_list(rows)}).save_to_disk(output)
@@ -96,6 +104,7 @@ def prepare_external_qa(
         "training_source": str(training_source) if training_source else None,
         "exact_context_overlap": context_overlap,
         "exact_question_overlap": question_overlap,
+        "exact_context_question_pair_overlap": pair_overlap,
         "download_record": _download_record(source),
         "transformation": "extractive QA -> grounded prompt/completion with [D1] citation",
     }

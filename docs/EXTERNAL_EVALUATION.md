@@ -42,6 +42,10 @@ Expected runtime is roughly one hour based on the earlier 256-row paired evaluat
 credits at 0.30 credits/hour. The dataset download and overlap audit are CPU work performed inside
 the same script before model loading.
 
+An identical question string alone is recorded but does not block evaluation when its evidence
+context differs. Exact context reuse or an exact context-question pair is treated as contamination
+and stops the run before the GPU model is loaded.
+
 Successful output:
 
 ```text
