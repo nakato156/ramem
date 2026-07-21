@@ -36,6 +36,13 @@ training = [
   "transformers>=4.56,<6",
   "trl>=0.23,<1",
 ]
+retrieval = [
+  "numpy>=2.0,<3",
+  "psutil>=6,<8",
+  "sentence-transformers>=5,<6",
+  "torch>=2.6,<2.7",
+  "transformers>=4.56,<5",
+]
 
 [project.scripts]
 ramem = "ramem.cli.app:app"
@@ -46,6 +53,7 @@ ramem-evaluate = "ramem.evaluation.generation:main"
 ramem-export = "ramem.training.export:main"
 ramem-prepare-external = "ramem.evaluation.prepare:main"
 ramem-analyze-evaluation = "ramem.evaluation.analysis:main"
+ramem-evaluate-retrieval = "ramem.evaluation.retrieval:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ramem"]
@@ -70,10 +78,26 @@ strict = true
 packages = ["ramem"]
 warn_unreachable = true
 
+[tool.uv]
+conflicts = [
+  [
+    { extra = "training" },
+    { extra = "retrieval" },
+  ],
+]
+
 [tool.uv.sources]
-torch = { index = "pytorch-cu121" }
+torch = [
+  { index = "pytorch-cu121", extra = "training" },
+  { index = "pytorch-cu124", extra = "retrieval" },
+]
 
 [[tool.uv.index]]
 name = "pytorch-cu121"
 url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
 explicit = true

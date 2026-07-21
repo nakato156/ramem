@@ -1,0 +1,16 @@
+topics_path: data/raw/miracl-es/miracl-v1.0-es/topics/topics.miracl-v1.0-es-dev.tsv
+qrels_path: data/raw/miracl-es/miracl-v1.0-es/qrels/qrels.miracl-v1.0-es-dev.tsv
+corpus_glob: data/interim/miracl-corpus-pilot/*.jsonl.gz
+output_dir: artifacts/evaluation/retrieval-e02-pilot
+max_background_documents: 10000
+max_queries: 100
+lexical_k: 100
+dense_k: 100
+final_k: 20
+rrf_k: 60
+embedding_model_id: google/embeddinggemma-300m
+embedding_dimension: 768
+embedding_batch_size: 1
+embedding_device: cuda
+run_dense: true
+seed: 42
