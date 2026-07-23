@@ -1,20 +1,27 @@
 # RaMem handoff
 
-Última actualización: 2026-07-22 (America/Lima).
+Última actualización: 2026-07-23 (America/Lima).
 
 ## Estado ejecutivo
 
-RaMem es un prototipo viable de QA en español con recuperación y respuestas citadas. El adaptador
-mejora de forma amplia y estadísticamente clara a Gemma 3 1B base en desarrollo externo. El
-recuperador denso EmbeddingGemma también supera a BM25 en el piloto. Aún falta validar el sistema
-end-to-end con contexto recuperado automáticamente y ejecutar una sola vez el test final reservado.
+La fase activa es el modelo finetuneado de QA en español con respuestas citadas. El objetivo
+inmediato no es completar RAG/RaMem end-to-end, sino decidir si el checkpoint finetuneado actual es
+suficiente para pasar a la fase RAG o si requiere mas evaluacion/ajuste.
+
+Decision actual: el checkpoint finetuneado queda aceptado para una evaluacion go/no-go controlada.
+No hay evidencia que justifique reentrenar a ciegas. La mejora frente a Gemma 3 1B base es amplia,
+consistente y estadisticamente clara en external-dev. Antes de congelarlo como modelo final, falta
+validarlo mejor en fidelidad semantica, abstencion y el test externo reservado.
+
+Resumen dedicado de fase 1:
+
+`docs/resume-fase1.md`
 
 Estado de repositorios al iniciar este handoff:
 
-- Local y `origin/main`: deben apuntar al commit que contiene este handoff; verificar con
+- Local, `origin/main` y Lightning deben apuntar al commit que contiene este handoff; verificar con
   `git status -sb` y `git rev-parse HEAD`.
-- Lightning: inaccesible por SSH (`Permission denied (publickey)`); no asumir que está actualizado.
-- Cuando vuelva el Studio, ejecutar un `git pull --ff-only origin main` sin necesidad de encender T4.
+- El 2026-07-23 Lightning CPU fue sincronizado y validado sin T4.
 
 ## 1. Cierre de artefactos
 
@@ -109,6 +116,24 @@ Fuente: `artifacts/evaluation/gemma-1b-t4-seed42/summary.json`.
 
 Fuente: `artifacts/evaluation/mlqa-es-external-dev-seed42/`.
 
+### Lectura de la fase finetuning
+
+El modelo finetuneado es viable como checkpoint de fase 1. La recomendacion tecnica es no ajustar
+mas el entrenamiento todavia. El siguiente paso no debe ser otro run de training, sino una
+validacion mas estricta del checkpoint actual:
+
+- Ejecutar el external-final reservado una sola vez cuando los criterios de revision esten cerrados.
+- Revisar manualmente una muestra estratificada: exactos, parciales altos, parciales bajos y sin
+  solapamiento.
+- Medir fidelidad semantica de respuestas y citas. La metrica actual `valid_citations = 1.0`
+  verifica IDs validos, no demuestra soporte semantico de cada afirmacion.
+- Probar robustez minima: sin evidencia, contexto distractor, preguntas ambiguas y casos donde debe
+  abstenerse.
+
+Si esas validaciones confirman external-dev, el checkpoint se congela y se pasa a RAG. Si fallan, el
+diagnostico debe separar problemas de entrenamiento, formato de datos, citas, abstencion y
+generalizacion.
+
 ### Recuperación MIRACL piloto, 54 consultas
 
 | Métrica | BM25 | Denso 768 | RRF |
@@ -140,9 +165,31 @@ correspondiente. El repositorio fija ambas resoluciones en `uv.lock`.
 
 ## Orden de próximos pasos
 
-### 2. E03: dimensiones de EmbeddingGemma
+### 2. Cerrar modelo finetuneado
 
-Ejecutar 768, 256 y 128 dimensiones sobre exactamente el mismo corpus y consultas.
+Prioridad actual. Antes de invertir en RAG completo:
+
+1. Definir el protocolo del external-final y dejarlo inmutable.
+2. Ejecutar el test externo reservado una sola vez.
+3. Hacer revision manual estratificada de external-dev y external-final.
+4. Incorporar Ragas solo como capa complementaria de validacion semantica, no como reemplazo de las
+   metricas deterministas.
+5. Decidir:
+   - congelar checkpoint y pasar a RAG, o
+   - corregir finetuning/evaluacion si aparece una falla concreta.
+
+Gates recomendados para congelar:
+
+- External-final cercano a external-dev.
+- Token F1 claramente superior a base.
+- EM y F1 por encima de criterios precomprometidos.
+- Citas validas por formato y muestra manual con soporte semantico aceptable.
+- Casos de abstencion y ruido sin fallas sistematicas graves.
+
+### 3. Fase posterior: E03 dimensiones de EmbeddingGemma
+
+Ejecutar 768, 256 y 128 dimensiones sobre exactamente el mismo corpus y consultas. Esto pertenece a
+la fase RAG y no debe bloquear la decision actual del modelo finetuneado.
 
 Antes de correr:
 
@@ -158,7 +205,7 @@ Criterio precomprometido:
 
 Recurso: GTX 1650 local para el piloto. No requiere T4.
 
-### 3. E04: chunking
+### 4. Fase posterior: E04 chunking
 
 Construir fragmentos reales, preservando `docid`, `parent_id`, offsets y hashes:
 
@@ -173,7 +220,7 @@ No ejecutar el producto cartesiano completo.
 
 Recursos: CPU para preparar; GTX 1650 para pilotos.
 
-### 4. E05: top-k y presupuesto de contexto
+### 5. Fase posterior: E05 top-k y presupuesto de contexto
 
 En development únicamente:
 
@@ -183,7 +230,7 @@ En development únicamente:
 Elegir la combinación más pequeña sobre la frontera calidad/latencia. Registrar truncado, número de
 chunks realmente incluidos y evidencia descartada.
 
-### 5. Integración end-to-end
+### 6. Fase posterior: integracion end-to-end
 
 Implementar y persistir:
 
@@ -212,13 +259,13 @@ Métricas deterministas obligatorias:
 - Latencia end-to-end, RAM y VRAM.
 - Cobertura de respuesta y abstención.
 
-### 6. Incorporación de Ragas
+### 7. Ragas para validar el modelo finetuneado
 
-Decisión: adoptar Ragas como capa complementaria de validación semántica, nunca como reemplazo de
-MIRACL, MLQA, métricas deterministas o revisión humana.
+Decisión: adoptar Ragas como capa complementaria de validación semántica del checkpoint finetuneado
+y, mas adelante, del RAG. Nunca debe reemplazar MLQA, metricas deterministas o revision humana.
 
-Ragas es especialmente útil porque el actual `valid_citations` solo verifica que los IDs emitidos
-sean `[D1]`; no demuestra que una afirmación esté sustentada por el texto citado.
+Ragas es especialmente util ahora porque el actual `valid_citations` solo verifica que los IDs
+emitidos sean `[D1]`; no demuestra que una afirmacion este sustentada por el texto citado.
 
 Métricas propuestas:
 
@@ -261,7 +308,7 @@ Documentación revisada:
 - <https://docs.ragas.io/en/stable/howtos/customizations/_caching/>
 - <https://docs.ragas.io/en/stable/concepts/test_data_generation/rag/>
 
-### 7. Robustez
+### 8. Robustez del modelo finetuneado
 
 Añadir casos revisados con:
 
@@ -273,21 +320,27 @@ Añadir casos revisados con:
 - Instrucciones maliciosas dentro de documentos.
 - Contextos largos y distractores.
 
-Analizar especialmente los 83/500 errores externos sin solapamiento.
+Analizar especialmente los 83/500 errores externos sin solapamiento antes de reentrenar.
 
-### 8. Evaluación final y release
+### 9. Evaluacion final y release
 
-Solo después de congelar dimensión, chunking, top-k, presupuesto y prompts:
+Para el modelo finetuneado, ejecutar primero:
+
+1. Revision manual estratificada.
+2. Ragas/calibracion semantica en development.
+3. Test externo reservado una sola vez.
+4. Decision de congelar checkpoint.
+
+Solo en la fase RAG, despues de congelar dimension, chunking, top-k, presupuesto y prompts:
 
 1. Ejecutar MIRACL completo en T4.
 2. Crear un release candidate inmutable.
-3. Ejecutar el test externo reservado una sola vez.
-4. No ajustar configuración después de observar el test.
-5. Publicar pesos, tokenizer, manifiesto, hashes, configuración, métricas y limitaciones.
+3. No ajustar configuracion despues de observar el test.
+4. Publicar pesos, tokenizer, manifiesto, hashes, configuracion, metricas y limitaciones.
 
 ## Pendientes de sincronización
 
-Cuando Lightning vuelva a estar accesible:
+Lightning CPU ya fue sincronizado el 2026-07-23. Para verificar de nuevo:
 
 ```bash
 cd /teamspace/studios/this_studio/ramem
@@ -296,8 +349,8 @@ git pull --ff-only origin main
 git rev-parse HEAD
 ```
 
-No es necesario volver a descargar el modelo desde Lightning: el modelo local canónico coincide
-exactamente con el SHA-256 previamente registrado allí.
+No es necesario volver a descargar el modelo desde Lightning: el modelo local canonico coincide
+exactamente con el SHA-256 registrado alli y verificado en Lightning.
 
 ## Definición de “RaMem terminado”
 
