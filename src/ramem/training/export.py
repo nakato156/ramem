@@ -6,7 +6,7 @@ import json
 import os
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict
@@ -19,6 +19,8 @@ class ExportConfig(BaseModel):
     adapter_path: Path
     output_dir: Path
     evaluation_summary: Path | None = None
+    device: Literal["auto", "cpu", "cuda"] = "auto"
+    dtype: Literal["auto", "float16", "bfloat16"] = "auto"
 
 
 def _git_commit() -> str | None:
@@ -34,6 +36,16 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _preferred_export_dtype(torch_module: Any, *, use_cuda: bool, requested: str = "auto") -> Any:
+    if requested == "float16":
+        return torch_module.float16
+    if requested == "bfloat16":
+        return torch_module.bfloat16
+    if not use_cuda:
+        return torch_module.float16
+    return torch_module.bfloat16 if torch_module.cuda.is_bf16_supported() else torch_module.float16
 
 
 def export_merged(config: ExportConfig) -> dict[str, Any]:
@@ -53,11 +65,15 @@ def export_merged(config: ExportConfig) -> dict[str, Any]:
     token = os.environ.get("HF_TOKEN")
     if not token:
         raise RuntimeError("HF_TOKEN is required to load the gated Gemma base model")
-    dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+    cuda_available = bool(torch.cuda.is_available())
+    if config.device == "cuda" and not cuda_available:
+        raise RuntimeError("CUDA export requested but no CUDA device is available")
+    use_cuda = config.device == "cuda" or (config.device == "auto" and cuda_available)
+    dtype = _preferred_export_dtype(torch, use_cuda=use_cuda, requested=config.dtype)
     base = AutoModelForCausalLM.from_pretrained(
         config.base_model_id,
         token=token,
-        device_map={"": 0} if torch.cuda.is_available() else "cpu",
+        device_map={"": 0} if use_cuda else "cpu",
         dtype=dtype,
         low_cpu_mem_usage=True,
     )
@@ -76,6 +92,7 @@ def export_merged(config: ExportConfig) -> dict[str, Any]:
         "adapter_path": str(config.adapter_path),
         "adapter_sha256": _sha256(config.adapter_path / "adapter_model.safetensors"),
         "git_commit": _git_commit(),
+        "device": "cuda" if use_cuda else "cpu",
         "dtype": str(dtype),
         "files": {
             path.name: {"bytes": path.stat().st_size, "sha256": _sha256(path)}
