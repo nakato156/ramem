@@ -78,6 +78,29 @@ strict = true
 packages = ["ramem"]
 warn_unreachable = true
 
+[[tool.mypy.overrides]]
+module = [
+  "ramem.cli.app",
+  "ramem.evaluation.generation",
+  "ramem.evaluation.prepare",
+  "ramem.generation.transformers",
+  "ramem.training.data",
+  "ramem.training.export",
+  "ramem.training.prepare",
+  "ramem.training.train",
+]
+# These modules are the runtime boundary for optional ML dependencies whose
+# installed packages expose incomplete or unstable type metadata.
+disable_error_code = [
+  "assignment",
+  "attr-defined",
+  "import-untyped",
+  "misc",
+  "no-untyped-call",
+  "union-attr",
+  "unused-ignore",
+]
+
 [tool.uv]
 conflicts = [
   [
