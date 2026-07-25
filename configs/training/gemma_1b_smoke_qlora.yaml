@@ -1,4 +1,5 @@
 model_id: google/gemma-3-1b-it
+model_revision: main
 dataset_path: data/processed/grounded-qa-es-v2
 output_dir: artifacts/training/gemma-1b-smoke-v2
 seed: 42

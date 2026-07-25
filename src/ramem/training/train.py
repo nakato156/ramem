@@ -14,6 +14,7 @@ class TrainConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     model_id: str
+    model_revision: str = "main"
     dataset_path: Path
     output_dir: Path
     seed: int = 42
@@ -63,6 +64,7 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
     try:
         import torch  # type: ignore[import-not-found]
         from datasets import load_from_disk  # type: ignore[import-not-found]
+        from huggingface_hub import HfApi
         from peft import (  # type: ignore[import-not-found]
             LoraConfig,
             prepare_model_for_kbit_training,
@@ -83,6 +85,16 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
     if not token:
         raise RuntimeError("HF_TOKEN is required; add it as a Lightning Studio secret")
     set_seed(config.seed)
+    resolved_model_revision = (
+        HfApi(token=token)
+        .model_info(
+            config.model_id,
+            revision=config.model_revision,
+        )
+        .sha
+    )
+    if not resolved_model_revision:
+        raise RuntimeError("Could not resolve the base model to an immutable revision")
     dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
     quantization = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -92,6 +104,7 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
     )
     model = AutoModelForCausalLM.from_pretrained(
         config.model_id,
+        revision=resolved_model_revision,
         token=token,
         device_map={"": 0},
         dtype=dtype,
@@ -99,7 +112,11 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
     )
     model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
     targets = _target_modules(model)
-    tokenizer = AutoTokenizer.from_pretrained(config.model_id, token=token)
+    tokenizer = AutoTokenizer.from_pretrained(
+        config.model_id,
+        revision=resolved_model_revision,
+        token=token,
+    )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -122,6 +139,7 @@ def train(config: TrainConfig, max_samples: int | None = None) -> None:
     checkpoint = latest_checkpoint(config.output_dir) if config.resume_from_checkpoint else None
     resolved = config.model_dump(mode="json") | {
         "resolved_target_modules": targets,
+        "resolved_model_revision": resolved_model_revision,
         "gpu": torch.cuda.get_device_name(0),
         "compute_dtype": str(dtype),
         "resolved_train_samples": len(train_data),

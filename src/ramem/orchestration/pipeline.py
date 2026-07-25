@@ -114,8 +114,8 @@ class RaMemPipeline:
 
 
 def build_pipeline(config: AppConfig, *, root: Path = Path(".")) -> RaMemPipeline:
-    index_path = config.storage.index_path
-    traces_dir = config.telemetry.traces_dir
+    index_path = config.storage.index_path or Path("artifacts/ramem.sqlite3")
+    traces_dir = config.telemetry.traces_dir or Path("artifacts/traces")
     if not index_path.is_absolute():
         index_path = root / index_path
     if not traces_dir.is_absolute():

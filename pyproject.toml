@@ -3,16 +3,23 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ramem"
-version = "0.1.0"
-description = "Local-first recoverable memory for small language models"
+name = "ramem-cli"
+version = "1.0.0"
+description = "Local-first conversational RAG memory CLI"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 license = { text = "Apache-2.0" }
 dependencies = [
+  "huggingface-hub>=0.34,<2",
+  "lancedb>=0.25,<1",
+  "numpy>=2.0,<3",
+  "platformdirs>=4.3,<5",
+  "prompt-toolkit>=3.0,<4",
   "pydantic>=2.8,<3",
   "python-dotenv>=1.1,<2",
   "PyYAML>=6.0,<7",
+  "rich>=13.9,<15",
+  "sentence-transformers>=5,<6",
   "typer>=0.12,<1",
 ]
 
@@ -22,6 +29,7 @@ dev = [
   "pre-commit>=3.7,<5",
   "pytest>=8.3,<9",
   "pytest-cov>=5,<7",
+  "pexpect>=4.9,<5; platform_system != 'Windows'",
   "ruff>=0.6,<1",
   "types-PyYAML>=6.0,<7",
 ]
@@ -37,11 +45,19 @@ training = [
   "trl>=0.23,<1",
 ]
 retrieval = [
-  "numpy>=2.0,<3",
   "psutil>=6,<8",
-  "sentence-transformers>=5,<6",
   "torch>=2.6,<2.7",
   "transformers>=4.56,<5",
+]
+llama = [
+  "llama-cpp-python>=0.3.16,<1",
+]
+transformers = [
+  "accelerate>=1.10,<2",
+  "bitsandbytes>=0.47,<1; platform_system != 'Darwin'",
+  "safetensors>=0.5,<1",
+  "torch==2.5.1",
+  "transformers>=4.56,<6",
 ]
 
 [project.scripts]
@@ -54,6 +70,8 @@ ramem-export = "ramem.training.export:main"
 ramem-prepare-external = "ramem.evaluation.prepare:main"
 ramem-analyze-evaluation = "ramem.evaluation.analysis:main"
 ramem-evaluate-retrieval = "ramem.evaluation.retrieval:main"
+ramem-release-gates = "ramem.evaluation.release_gates:main"
+ramem-adapt-memory-benchmark = "ramem.evaluation.benchmark_adapters:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ramem"]
@@ -81,9 +99,12 @@ warn_unreachable = true
 [[tool.mypy.overrides]]
 module = [
   "ramem.cli.app",
+  "ramem.generation.backends",
   "ramem.evaluation.generation",
   "ramem.evaluation.prepare",
   "ramem.generation.transformers",
+  "ramem.memory.embeddings",
+  "ramem.memory.lance",
   "ramem.training.data",
   "ramem.training.export",
   "ramem.training.prepare",
@@ -94,8 +115,10 @@ module = [
 disable_error_code = [
   "assignment",
   "attr-defined",
+  "import-not-found",
   "import-untyped",
   "misc",
+  "no-any-return",
   "no-untyped-call",
   "union-attr",
   "unused-ignore",
@@ -107,11 +130,16 @@ conflicts = [
     { extra = "training" },
     { extra = "retrieval" },
   ],
+  [
+    { extra = "transformers" },
+    { extra = "retrieval" },
+  ],
 ]
 
 [tool.uv.sources]
 torch = [
   { index = "pytorch-cu121", extra = "training" },
+  { index = "pytorch-cu121", extra = "transformers" },
   { index = "pytorch-cu124", extra = "retrieval" },
 ]
 

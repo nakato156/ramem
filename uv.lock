@@ -2,15 +2,18 @@ version = 1
 revision = 3
 requires-python = "==3.12.*"
 resolution-markers = [
-    "sys_platform == 'win32' and extra != 'extra-5-ramem-retrieval' and extra == 'extra-5-ramem-training'",
-    "sys_platform == 'emscripten' and extra != 'extra-5-ramem-retrieval' and extra == 'extra-5-ramem-training'",
-    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-5-ramem-retrieval' and extra == 'extra-5-ramem-training'",
-    "extra == 'extra-5-ramem-retrieval' and extra != 'extra-5-ramem-training'",
-    "extra != 'extra-5-ramem-retrieval' and extra != 'extra-5-ramem-training'",
+    "sys_platform == 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "sys_platform == 'emscripten' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra == 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training' and extra != 'extra-9-ramem-cli-transformers'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 conflicts = [[
-    { package = "ramem", extra = "retrieval" },
-    { package = "ramem", extra = "training" },
+    { package = "ramem-cli", extra = "retrieval" },
+    { package = "ramem-cli", extra = "training" },
+], [
+    { package = "ramem-cli", extra = "retrieval" },
+    { package = "ramem-cli", extra = "transformers" },
 ]]
 
 [[package]]
@@ -225,7 +228,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "dill" },
     { name = "filelock" },
-    { name = "fsspec", extra = ["http"], marker = "extra == 'extra-5-ramem-training'" },
+    { name = "fsspec", extra = ["http"], marker = "extra == 'extra-9-ramem-cli-training' or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
     { name = "httpx" },
     { name = "huggingface-hub" },
     { name = "multiprocess" },
@@ -244,12 +247,33 @@ wheels = [
 ]
 
 [[package]]
+name = "deprecation"
+version = "2.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5a/d3/8ae2869247df154b64c1884d7346d412fed0c49df84db635aab2d1c40e62/deprecation-2.1.0.tar.gz", hash = "sha256:72b3bde64e5d778694b0cf68178aed03d15e15477116add3fb773e581f9518ff", size = 173788, upload-time = "2020-04-20T14:23:38.738Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/02/c3/253a89ee03fc9b9682f1541728eb66db7db22148cd94f89ab22528cd1e1b/deprecation-2.1.0-py2.py3-none-any.whl", hash = "sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a", size = 11178, upload-time = "2020-04-20T14:23:36.581Z" },
+]
+
+[[package]]
 name = "dill"
 version = "0.4.1"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/81/e1/56027a71e31b02ddc53c7d65b01e68edf64dea2932122fe7746a516f75d5/dill-0.4.1.tar.gz", hash = "sha256:423092df4182177d4d8ba8290c8a5b640c66ab35ec7da59ccfa00f6fa3eea5fa", size = 187315, upload-time = "2026-01-19T02:36:56.85Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1e/77/dc8c558f7593132cf8fefec57c4f60c83b16941c574ac5f619abb3ae7933/dill-0.4.1-py3-none-any.whl", hash = "sha256:1e1ce33e978ae97fcfcff5638477032b801c46c7c65cf717f95fbc2248f79a9d", size = 120019, upload-time = "2026-01-19T02:36:55.663Z" },
+]
+
+[[package]]
+name = "diskcache"
+version = "5.6.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/3f/21/1c1ffc1a039ddcc459db43cc108658f32c57d271d7289a2794e401d0fdb6/diskcache-5.6.3.tar.gz", hash = "sha256:2c3a3fa2743d8535d832ec61c2054a1641f41775aa7c556758a109941e33e4fc", size = 67916, upload-time = "2023-08-31T06:12:00.316Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3f/27/4570e78fc0bf5ea0ca45eb1de3818a23787af9b390c0b0a0033a1b8236f9/diskcache-5.6.3-py3-none-any.whl", hash = "sha256:5e31b2d5fbad117cc363ebaf6b689474db18a1f6438bc82358b024abd4c2ca19", size = 45550, upload-time = "2023-08-31T06:11:58.822Z" },
 ]
 
 [[package]]
@@ -369,7 +393,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "filelock" },
     { name = "fsspec" },
-    { name = "hf-xet", marker = "platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'" },
+    { name = "hf-xet", marker = "platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64' or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
     { name = "packaging" },
     { name = "pyyaml" },
     { name = "requests" },
@@ -430,6 +454,53 @@ wheels = [
 ]
 
 [[package]]
+name = "lance-namespace"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lance-namespace-urllib3-client" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/00/81/4cf8d0412e1f37b2bfa70d0aeb9c7ae4ab73607534e44d60b55efb485306/lance_namespace-0.9.0.tar.gz", hash = "sha256:f738b641cc615b17323baa4eb47900f184688739ee3d2ea9fe39396b9588e53d", size = 11637, upload-time = "2026-07-01T07:42:41.78Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/fe/f38747c9610ade83dd9a99a0470b9432b6f21ce4e2bb5524edbe66f626fd/lance_namespace-0.9.0-py3-none-any.whl", hash = "sha256:f785ff10927e4ce0db69986576670fedd37f8a33521e8a4630c6be22db8061b2", size = 13501, upload-time = "2026-07-01T07:42:39.372Z" },
+]
+
+[[package]]
+name = "lance-namespace-urllib3-client"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "python-dateutil" },
+    { name = "typing-extensions" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d3/c3/32d0e2618549ace857c80a457e5915ef3e1145661baff876c8a5ec27be5b/lance_namespace_urllib3_client-0.9.0.tar.gz", hash = "sha256:cf796fa5307fa4dde91fe4bec2af28b90ba79191852d4394e8fe44276538e40f", size = 235805, upload-time = "2026-07-01T07:42:42.563Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cc/ab/c8754da0a1efc817f8480100cfe12b7e04034df834759de8ecf02beff3cc/lance_namespace_urllib3_client-0.9.0-py3-none-any.whl", hash = "sha256:be819c8cffb1e460a3a504dbf52d1ca009560a48e7202b8c4279998e4adf9fe4", size = 405586, upload-time = "2026-07-01T07:42:40.503Z" },
+]
+
+[[package]]
+name = "lancedb"
+version = "0.34.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "deprecation" },
+    { name = "lance-namespace" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pyarrow" },
+    { name = "pydantic" },
+    { name = "tqdm" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/f7/5262b9aa593f790757163c0165ab0da1dda054758901bea7e4f02c9cb633/lancedb-0.34.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:c462f2e6f933cad659fd0179394eaab578acbc9151fe2ef41bc29b36ecca5058", size = 52654213, upload-time = "2026-07-02T17:13:31.102Z" },
+    { url = "https://files.pythonhosted.org/packages/69/99/05ea0d32229ebea695193ff20c15d6ecae25785ad82a9d4723d98832a284/lancedb-0.34.0-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:48829e88e708947d0520454ab9e4f8efa35f3e3626469eadd3a6e061b89cb223", size = 55434501, upload-time = "2026-07-02T17:13:34.81Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/4e/4325c13d5afa93c466428a5a0f168ad4d96f5eb4a77bbe7c5100d39c9897/lancedb-0.34.0-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:05ba8a5b58e064edfbe5be71b1abf2e411b4eaf295d1a173dcb1a55c5bfb5285", size = 58659359, upload-time = "2026-07-02T17:13:38.424Z" },
+    { url = "https://files.pythonhosted.org/packages/d9/5d/8ca165f1386caf6c4d1c515afd52f345b66432264eecfdfb7fd33eefd9af/lancedb-0.34.0-cp39-abi3-win_amd64.whl", hash = "sha256:51cbc11808f9e3332819b9367c975b3a888541447a8e7bea09c57c852a279153", size = 63530726, upload-time = "2026-07-02T17:13:41.612Z" },
+]
+
+[[package]]
 name = "librt"
 version = "0.13.0"
 source = { registry = "https://pypi.org/simple" }
@@ -449,6 +520,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c9/7b/2da9c74c1ed25a89cc4e1c8e007ea2eb4a0f1fafa3e70d757fe3242c5c5c/librt-0.13.0-cp312-cp312-win_amd64.whl", hash = "sha256:e54a315caf843c8d77e388cadc56ea9ded569935ee2d2347d7ea94992e5aa6fa", size = 126934, upload-time = "2026-07-08T12:25:17.275Z" },
     { url = "https://files.pythonhosted.org/packages/d0/65/aead61bbf3b5358593f9d4779d2a0e88eaf6ec191a6342dde36dd1df6371/librt-0.13.0-cp312-cp312-win_arm64.whl", hash = "sha256:c718e99a0992127af84385378460db624103b559ab260435abcfe77a4e4ed1c1", size = 112236, upload-time = "2026-07-08T12:25:18.425Z" },
 ]
+
+[[package]]
+name = "llama-cpp-python"
+version = "0.3.34"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "diskcache" },
+    { name = "jinja2" },
+    { name = "numpy" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c1/2f/46487e949da42b31847853793ddbfd44c7414e94d4364c9a41f91f30af27/llama_cpp_python-0.3.34.tar.gz", hash = "sha256:d849d286d808284f1d3ec1bd6875572430d29d1f9574a010232caa4e9cef0e35", size = 71617302, upload-time = "2026-07-12T04:33:41.928Z" }
 
 [[package]]
 name = "markdown-it-py"
@@ -546,7 +629,7 @@ name = "mypy"
 version = "1.20.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "librt", marker = "platform_python_implementation != 'PyPy' or (extra == 'extra-5-ramem-retrieval' and extra == 'extra-5-ramem-training')" },
+    { name = "librt", marker = "platform_python_implementation != 'PyPy' or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
     { name = "mypy-extensions" },
     { name = "pathspec" },
     { name = "typing-extensions" },
@@ -623,7 +706,8 @@ name = "nvidia-cublas-cu12"
 version = "12.1.3.1"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/37/6d/121efd7382d5b0284239f4ab1fc1590d86d34ed4a4a2fdb13b30ca8e5740/nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:ee53ccca76a6fc08fb9701aa95b6ceb242cdaab118c3bb152af4e579af792728", size = 410594774, upload-time = "2023-04-19T15:50:03.519Z" },
@@ -645,7 +729,8 @@ name = "nvidia-cuda-cupti-cu12"
 version = "12.1.105"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7e/00/6b218edd739ecfc60524e585ba8e6b00554dd908de2c9c66c1af3e44e18d/nvidia_cuda_cupti_cu12-12.1.105-py3-none-manylinux1_x86_64.whl", hash = "sha256:e54fde3983165c624cb79254ae9818a456eb6e87a7fd4d56a2352c24ee542d7e", size = 14109015, upload-time = "2023-04-19T15:47:32.502Z" },
@@ -667,7 +752,8 @@ name = "nvidia-cuda-nvrtc-cu12"
 version = "12.1.105"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b6/9f/c64c03f49d6fbc56196664d05dba14e3a561038a81a638eeb47f4d4cfd48/nvidia_cuda_nvrtc_cu12-12.1.105-py3-none-manylinux1_x86_64.whl", hash = "sha256:339b385f50c309763ca65456ec75e17bbefcbbf2893f462cb8b90584cd27a1c2", size = 23671734, upload-time = "2023-04-19T15:48:32.42Z" },
@@ -689,7 +775,8 @@ name = "nvidia-cuda-runtime-cu12"
 version = "12.1.105"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/eb/d5/c68b1d2cdfcc59e72e8a5949a37ddb22ae6cade80cd4a57a84d4c8b55472/nvidia_cuda_runtime_cu12-12.1.105-py3-none-manylinux1_x86_64.whl", hash = "sha256:6e258468ddf5796e25f1dc591a31029fa317d97a0a94ed93468fc86301d61e40", size = 823596, upload-time = "2023-04-19T15:47:22.471Z" },
@@ -711,8 +798,8 @@ name = "nvidia-cudnn-cu12"
 version = "9.1.0.70"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-cublas-cu12", version = "12.1.3.1", source = { registry = "https://pypi.org/simple" }, marker = "(sys_platform != 'emscripten' and sys_platform != 'win32' and extra == 'extra-5-ramem-training') or (sys_platform == 'emscripten' and extra == 'extra-5-ramem-retrieval' and extra == 'extra-5-ramem-training') or (sys_platform == 'win32' and extra == 'extra-5-ramem-retrieval' and extra == 'extra-5-ramem-training')" },
-    { name = "nvidia-cublas-cu12", version = "12.4.5.8", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-5-ramem-retrieval'" },
+    { name = "nvidia-cublas-cu12", version = "12.1.3.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-ramem-cli-training' or extra == 'extra-9-ramem-cli-transformers' or extra != 'extra-9-ramem-cli-retrieval'" },
+    { name = "nvidia-cublas-cu12", version = "12.4.5.8", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-ramem-cli-retrieval'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9f/fd/713452cd72343f682b1c7b9321e23829f00b842ceaedcda96e742ea0b0b3/nvidia_cudnn_cu12-9.1.0.70-py3-none-manylinux2014_x86_64.whl", hash = "sha256:165764f44ef8c61fcdfdfdbe769d687e06374059fbb388b6c89ecb0e28793a6f", size = 664752741, upload-time = "2024-04-22T15:24:15.253Z" },
@@ -724,7 +811,8 @@ name = "nvidia-cufft-cu12"
 version = "11.0.2.54"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/86/94/eb540db023ce1d162e7bea9f8f5aa781d57c65aed513c33ee9a5123ead4d/nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl", hash = "sha256:794e3948a1aa71fd817c3775866943936774d1c14e7628c74f6f7417224cdf56", size = 121635161, upload-time = "2023-04-19T15:50:46Z" },
@@ -736,7 +824,7 @@ name = "nvidia-cufft-cu12"
 version = "11.2.1.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-nvjitlink-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" } },
+    { name = "nvidia-nvjitlink-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-ramem-cli-retrieval'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7a/8a/0e728f749baca3fbeffad762738276e5df60851958be7783af121a7221e7/nvidia_cufft_cu12-11.2.1.3-py3-none-manylinux2014_aarch64.whl", hash = "sha256:5dad8008fc7f92f5ddfa2101430917ce2ffacd86824914c82e28990ad7f00399", size = 211422548, upload-time = "2024-06-18T19:33:39.396Z" },
@@ -749,7 +837,8 @@ name = "nvidia-curand-cu12"
 version = "10.3.2.106"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/44/31/4890b1c9abc496303412947fc7dcea3d14861720642b49e8ceed89636705/nvidia_curand_cu12-10.3.2.106-py3-none-manylinux1_x86_64.whl", hash = "sha256:9d264c5036dde4e64f1de8c50ae753237c12e0b1348738169cd0f8a536c0e1e0", size = 56467784, upload-time = "2023-04-19T15:51:04.804Z" },
@@ -771,12 +860,13 @@ name = "nvidia-cusolver-cu12"
 version = "11.4.5.107"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 dependencies = [
-    { name = "nvidia-cublas-cu12", version = "12.1.3.1", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
-    { name = "nvidia-cusparse-cu12", version = "12.1.0.106", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
-    { name = "nvidia-nvjitlink-cu12", version = "12.9.86", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "nvidia-cublas-cu12", version = "12.1.3.1", source = { registry = "https://pypi.org/simple" } },
+    { name = "nvidia-cusparse-cu12", version = "12.1.0.106", source = { registry = "https://pypi.org/simple" } },
+    { name = "nvidia-nvjitlink-cu12", version = "12.9.86", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/bc/1d/8de1e5c67099015c834315e333911273a8c6aaba78923dd1d1e25fc5f217/nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl", hash = "sha256:8a7ec542f0412294b15072fa7dab71d31334014a69f953004ea7a118206fe0dd", size = 124161928, upload-time = "2023-04-19T15:51:25.781Z" },
@@ -788,9 +878,9 @@ name = "nvidia-cusolver-cu12"
 version = "11.6.1.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-cublas-cu12", version = "12.4.5.8", source = { registry = "https://pypi.org/simple" } },
-    { name = "nvidia-cusparse-cu12", version = "12.3.1.170", source = { registry = "https://pypi.org/simple" } },
-    { name = "nvidia-nvjitlink-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" } },
+    { name = "nvidia-cublas-cu12", version = "12.4.5.8", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-ramem-cli-retrieval'" },
+    { name = "nvidia-cusparse-cu12", version = "12.3.1.170", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-ramem-cli-retrieval'" },
+    { name = "nvidia-nvjitlink-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-ramem-cli-retrieval'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/46/6b/a5c33cf16af09166845345275c34ad2190944bcc6026797a39f8e0a282e0/nvidia_cusolver_cu12-11.6.1.9-py3-none-manylinux2014_aarch64.whl", hash = "sha256:d338f155f174f90724bbde3758b7ac375a70ce8e706d70b018dd3375545fc84e", size = 127634111, upload-time = "2024-06-18T19:35:01.793Z" },
@@ -803,10 +893,11 @@ name = "nvidia-cusparse-cu12"
 version = "12.1.0.106"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 dependencies = [
-    { name = "nvidia-nvjitlink-cu12", version = "12.9.86", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "nvidia-nvjitlink-cu12", version = "12.9.86", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/65/5b/cfaeebf25cd9fdec14338ccb16f6b2c4c7fa9163aefcf057d86b9cc248bb/nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl", hash = "sha256:f3b50f42cf363f86ab21f720998517a659a48131e8d538dc02f8768237bd884c", size = 195958278, upload-time = "2023-04-19T15:51:49.939Z" },
@@ -818,7 +909,7 @@ name = "nvidia-cusparse-cu12"
 version = "12.3.1.170"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-nvjitlink-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" } },
+    { name = "nvidia-nvjitlink-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-9-ramem-cli-retrieval'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/96/a9/c0d2f83a53d40a4a41be14cea6a0bf9e668ffcf8b004bd65633f433050c0/nvidia_cusparse_cu12-12.3.1.170-py3-none-manylinux2014_aarch64.whl", hash = "sha256:9d32f62896231ebe0480efd8a7f702e143c98cfaa0e8a76df3386c1ba2b54df3", size = 207381987, upload-time = "2024-06-18T19:35:32.989Z" },
@@ -859,7 +950,8 @@ name = "nvidia-nvjitlink-cu12"
 version = "12.9.86"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/46/0c/c75bbfb967457a0b7670b8ad267bfc4fffdf341c074e0a80db06c24ccfd4/nvidia_nvjitlink_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:e3f1171dbdc83c5932a45f0f4c99180a70de9bd2718c1ab77d14104f6d7147f9", size = 39748338, upload-time = "2025-06-05T20:10:25.613Z" },
@@ -872,7 +964,8 @@ name = "nvidia-nvtx-cu12"
 version = "12.1.105"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/da/d3/8057f0587683ed2fcd4dbfbdfdfa807b9160b809976099d36b8f60d08f03/nvidia_nvtx_cu12-12.1.105-py3-none-manylinux1_x86_64.whl", hash = "sha256:dc21cf308ca5691e7c04d962e213f8a4aa9bbfa23d95412f452254c2caeb09e5", size = 99138, upload-time = "2023-04-19T15:48:43.556Z" },
@@ -950,6 +1043,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pexpect"
+version = "4.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "ptyprocess" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9e/c3/059298687310d527a58bb01f3b1965787ee3b40dce76752eda8b44e9a2c5/pexpect-4.9.0-py2.py3-none-any.whl", hash = "sha256:7236d1e080e4936be2dc3e326cec0af72acf9212a7e1d060210e70a47e253523", size = 63772, upload-time = "2023-11-25T06:56:14.81Z" },
+]
+
+[[package]]
 name = "platformdirs"
 version = "4.10.1"
 source = { registry = "https://pypi.org/simple" }
@@ -981,6 +1086,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8e/22/2de9408ac81acbb8a7d05d4cc064a152ccf33b3d480ebe0cd292153db239/pre_commit-4.6.0.tar.gz", hash = "sha256:718d2208cef53fdc38206e40524a6d4d9576d103eb16f0fec11c875e7716e9d9", size = 198525, upload-time = "2026-04-21T20:31:41.613Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/80/6e/4b28b62ecb6aae56769c34a8ff1d661473ec1e9519e2d5f8b2c150086b26/pre_commit-4.6.0-py2.py3-none-any.whl", hash = "sha256:e2cf246f7299edcabcf15f9b0571fdce06058527f0a06535068a86d38089f29b", size = 226472, upload-time = "2026-04-21T20:31:40.092Z" },
+]
+
+[[package]]
+name = "prompt-toolkit"
+version = "3.0.52"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "wcwidth" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a1/96/06e01a7b38dce6fe1db213e061a4602dd6032a8a97ef6c1a862537732421/prompt_toolkit-3.0.52.tar.gz", hash = "sha256:28cde192929c8e7321de85de1ddbe736f1375148b02f2e17edd840042b1be855", size = 434198, upload-time = "2025-08-27T15:24:02.057Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/03/0d3ce49e2505ae70cf43bc5bb3033955d2fc9f932163e84dc0779cc47f48/prompt_toolkit-3.0.52-py3-none-any.whl", hash = "sha256:9aac639a3bbd33284347de5ad8d68ecc044b91a762dc39b7c21095fcd6a19955", size = 391431, upload-time = "2025-08-27T15:23:59.498Z" },
 ]
 
 [[package]]
@@ -1023,6 +1140,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/04/78/0acd37ca84ce3ddffaa92ef0f571e073faa6d8ff1f0559ab1272188ea2be/psutil-7.2.2-cp36-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:b58fabe35e80b264a4e3bb23e6b96f9e45a3df7fb7eed419ac0e5947c61e47cc", size = 148266, upload-time = "2026-01-28T18:15:31.597Z" },
     { url = "https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl", hash = "sha256:eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988", size = 137737, upload-time = "2026-01-28T18:15:33.849Z" },
     { url = "https://files.pythonhosted.org/packages/8c/c7/7bb2e321574b10df20cbde462a94e2b71d05f9bbda251ef27d104668306a/psutil-7.2.2-cp37-abi3-win_arm64.whl", hash = "sha256:8c233660f575a5a89e6d4cb65d9f938126312bca76d8fe087b947b3a1aaac9ee", size = 134617, upload-time = "2026-01-28T18:15:36.514Z" },
+]
+
+[[package]]
+name = "ptyprocess"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/20/e5/16ff212c1e452235a90aeb09066144d0c5a6a8c0834397e03f5224495c4e/ptyprocess-0.7.0.tar.gz", hash = "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220", size = 70762, upload-time = "2020-12-28T15:15:30.155Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/22/a6/858897256d0deac81a172289110f31629fc4cee19b6f01283303e18c8db3/ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35", size = 13993, upload-time = "2020-12-28T15:15:28.35Z" },
 ]
 
 [[package]]
@@ -1099,7 +1225,7 @@ name = "pytest"
 version = "8.4.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-5-ramem-retrieval' and extra == 'extra-5-ramem-training')" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
@@ -1177,29 +1303,38 @@ wheels = [
 ]
 
 [[package]]
-name = "ramem"
-version = "0.1.0"
+name = "ramem-cli"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
+    { name = "huggingface-hub" },
+    { name = "lancedb" },
+    { name = "numpy" },
+    { name = "platformdirs" },
+    { name = "prompt-toolkit" },
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
+    { name = "rich" },
+    { name = "sentence-transformers" },
     { name = "typer" },
 ]
 
 [package.optional-dependencies]
 dev = [
     { name = "mypy" },
+    { name = "pexpect", marker = "sys_platform != 'win32' or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
     { name = "types-pyyaml" },
 ]
+llama = [
+    { name = "llama-cpp-python" },
+]
 retrieval = [
-    { name = "numpy" },
     { name = "psutil" },
-    { name = "sentence-transformers" },
     { name = "torch", version = "2.6.0+cu124", source = { registry = "https://download.pytorch.org/whl/cu124" } },
     { name = "transformers" },
 ]
@@ -1214,35 +1349,54 @@ training = [
     { name = "transformers" },
     { name = "trl" },
 ]
+transformers = [
+    { name = "accelerate" },
+    { name = "bitsandbytes", marker = "sys_platform != 'darwin'" },
+    { name = "safetensors" },
+    { name = "torch", version = "2.5.1+cu121", source = { registry = "https://download.pytorch.org/whl/cu121" } },
+    { name = "transformers" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "accelerate", marker = "extra == 'training'", specifier = ">=1.10,<2" },
+    { name = "accelerate", marker = "extra == 'transformers'", specifier = ">=1.10,<2" },
+    { name = "bitsandbytes", marker = "sys_platform != 'darwin' and extra == 'transformers'", specifier = ">=0.47,<1" },
     { name = "bitsandbytes", marker = "extra == 'training'", specifier = ">=0.47,<1" },
     { name = "datasets", marker = "extra == 'training'", specifier = ">=4.0,<5" },
+    { name = "huggingface-hub", specifier = ">=0.34,<2" },
     { name = "huggingface-hub", marker = "extra == 'training'", specifier = ">=0.34,<2" },
+    { name = "lancedb", specifier = ">=0.25,<1" },
+    { name = "llama-cpp-python", marker = "extra == 'llama'", specifier = ">=0.3.16,<1" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11,<2" },
-    { name = "numpy", marker = "extra == 'retrieval'", specifier = ">=2.0,<3" },
+    { name = "numpy", specifier = ">=2.0,<3" },
     { name = "peft", marker = "extra == 'training'", specifier = ">=0.17,<1" },
+    { name = "pexpect", marker = "sys_platform != 'win32' and extra == 'dev'", specifier = ">=4.9,<5" },
+    { name = "platformdirs", specifier = ">=4.3,<5" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.7,<5" },
+    { name = "prompt-toolkit", specifier = ">=3.0,<4" },
     { name = "psutil", marker = "extra == 'retrieval'", specifier = ">=6,<8" },
     { name = "pydantic", specifier = ">=2.8,<3" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3,<9" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5,<7" },
     { name = "python-dotenv", specifier = ">=1.1,<2" },
     { name = "pyyaml", specifier = ">=6.0,<7" },
+    { name = "rich", specifier = ">=13.9,<15" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6,<1" },
     { name = "safetensors", marker = "extra == 'training'", specifier = ">=0.5,<1" },
-    { name = "sentence-transformers", marker = "extra == 'retrieval'", specifier = ">=5,<6" },
-    { name = "torch", marker = "extra == 'retrieval'", specifier = ">=2.6,<2.7", index = "https://download.pytorch.org/whl/cu124", conflict = { package = "ramem", extra = "retrieval" } },
-    { name = "torch", marker = "extra == 'training'", specifier = "==2.5.1", index = "https://download.pytorch.org/whl/cu121", conflict = { package = "ramem", extra = "training" } },
+    { name = "safetensors", marker = "extra == 'transformers'", specifier = ">=0.5,<1" },
+    { name = "sentence-transformers", specifier = ">=5,<6" },
+    { name = "torch", marker = "extra == 'retrieval'", specifier = ">=2.6,<2.7", index = "https://download.pytorch.org/whl/cu124", conflict = { package = "ramem-cli", extra = "retrieval" } },
+    { name = "torch", marker = "extra == 'training'", specifier = "==2.5.1", index = "https://download.pytorch.org/whl/cu121", conflict = { package = "ramem-cli", extra = "training" } },
+    { name = "torch", marker = "extra == 'transformers'", specifier = "==2.5.1", index = "https://download.pytorch.org/whl/cu121", conflict = { package = "ramem-cli", extra = "transformers" } },
     { name = "transformers", marker = "extra == 'retrieval'", specifier = ">=4.56,<5" },
     { name = "transformers", marker = "extra == 'training'", specifier = ">=4.56,<6" },
+    { name = "transformers", marker = "extra == 'transformers'", specifier = ">=4.56,<6" },
     { name = "trl", marker = "extra == 'training'", specifier = ">=0.23,<1" },
     { name = "typer", specifier = ">=0.12,<1" },
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0,<7" },
 ]
-provides-extras = ["dev", "training", "retrieval"]
+provides-extras = ["dev", "training", "retrieval", "llama", "transformers"]
 
 [[package]]
 name = "regex"
@@ -1285,15 +1439,15 @@ wheels = [
 
 [[package]]
 name = "rich"
-version = "15.0.0"
+version = "14.3.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py" },
     { name = "pygments" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/8f/0722ca900cc807c13a6a0c696dacf35430f72e0ec571c4275d2371fca3e9/rich-15.0.0.tar.gz", hash = "sha256:edd07a4824c6b40189fb7ac9bc4c52536e9780fbbfbddf6f1e2502c31b068c36", size = 230680, upload-time = "2026-04-12T08:24:00.75Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/67/cae617f1351490c25a4b8ac3b8b63a4dda609295d8222bad12242dfdc629/rich-14.3.4.tar.gz", hash = "sha256:817e02727f2b25b40ef56f5aa2217f400c8489f79ca8f46ea2b70dd5e14558a9", size = 230524, upload-time = "2026-04-11T02:57:45.419Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl", hash = "sha256:33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb", size = 310654, upload-time = "2026-04-12T08:24:02.83Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/76/6d163cfac87b632216f71879e6b2cf17163f773ff59c00b5ff4900a80fa3/rich-14.3.4-py3-none-any.whl", hash = "sha256:07e7adb4690f68864777b1450859253bed81a99a31ac321ac1817b2313558952", size = 310480, upload-time = "2026-04-11T02:57:47.484Z" },
 ]
 
 [[package]]
@@ -1396,7 +1550,8 @@ dependencies = [
     { name = "numpy" },
     { name = "scikit-learn" },
     { name = "scipy" },
-    { name = "torch", version = "2.6.0+cu124", source = { registry = "https://download.pytorch.org/whl/cu124" } },
+    { name = "torch", version = "2.5.1+cu121", source = { registry = "https://download.pytorch.org/whl/cu121" }, marker = "extra == 'extra-9-ramem-cli-training' or extra == 'extra-9-ramem-cli-transformers' or extra != 'extra-9-ramem-cli-retrieval'" },
+    { name = "torch", version = "2.6.0+cu124", source = { registry = "https://download.pytorch.org/whl/cu124" }, marker = "extra == 'extra-9-ramem-cli-retrieval'" },
     { name = "tqdm" },
     { name = "transformers" },
     { name = "typing-extensions" },
@@ -1485,29 +1640,30 @@ name = "torch"
 version = "2.5.1+cu121"
 source = { registry = "https://download.pytorch.org/whl/cu121" }
 resolution-markers = [
-    "sys_platform == 'win32'",
-    "sys_platform == 'emscripten'",
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform == 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "sys_platform == 'emscripten' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 dependencies = [
     { name = "filelock" },
     { name = "fsspec" },
     { name = "jinja2" },
     { name = "networkx" },
-    { name = "nvidia-cublas-cu12", version = "12.1.3.1", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-cupti-cu12", version = "12.1.105", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-nvrtc-cu12", version = "12.1.105", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-runtime-cu12", version = "12.1.105", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cudnn-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cufft-cu12", version = "11.0.2.54", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-curand-cu12", version = "10.3.2.106", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cusolver-cu12", version = "11.4.5.107", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cusparse-cu12", version = "12.1.0.106", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-nccl-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-nvtx-cu12", version = "12.1.105", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "setuptools" },
-    { name = "sympy" },
-    { name = "triton", version = "3.1.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-cublas-cu12", version = "12.1.3.1", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cuda-cupti-cu12", version = "12.1.105", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cuda-nvrtc-cu12", version = "12.1.105", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cuda-runtime-cu12", version = "12.1.105", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cudnn-cu12", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cufft-cu12", version = "11.0.2.54", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-curand-cu12", version = "10.3.2.106", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cusolver-cu12", version = "11.4.5.107", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cusparse-cu12", version = "12.1.0.106", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-nccl-cu12", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-nvtx-cu12", version = "12.1.105", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "setuptools", marker = "extra == 'extra-9-ramem-cli-training' or extra == 'extra-9-ramem-cli-transformers' or extra != 'extra-9-ramem-cli-retrieval'" },
+    { name = "sympy", marker = "extra == 'extra-9-ramem-cli-training' or extra == 'extra-9-ramem-cli-transformers' or extra != 'extra-9-ramem-cli-retrieval'" },
+    { name = "triton", version = "3.1.0", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-9-ramem-cli-retrieval') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
     { name = "typing-extensions" },
 ]
 wheels = [
@@ -1520,27 +1676,27 @@ name = "torch"
 version = "2.6.0+cu124"
 source = { registry = "https://download.pytorch.org/whl/cu124" }
 dependencies = [
-    { name = "filelock" },
-    { name = "fsspec" },
-    { name = "jinja2" },
-    { name = "networkx" },
-    { name = "nvidia-cublas-cu12", version = "12.4.5.8", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-cupti-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-nvrtc-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-runtime-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cudnn-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cufft-cu12", version = "11.2.1.3", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-curand-cu12", version = "10.3.5.147", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cusolver-cu12", version = "11.6.1.9", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cusparse-cu12", version = "12.3.1.170", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cusparselt-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-nccl-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-nvjitlink-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-nvtx-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "setuptools" },
-    { name = "sympy" },
-    { name = "triton", version = "3.2.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "typing-extensions" },
+    { name = "filelock", marker = "extra == 'extra-9-ramem-cli-retrieval'" },
+    { name = "fsspec", marker = "extra == 'extra-9-ramem-cli-retrieval'" },
+    { name = "jinja2", marker = "extra == 'extra-9-ramem-cli-retrieval'" },
+    { name = "networkx", marker = "extra == 'extra-9-ramem-cli-retrieval'" },
+    { name = "nvidia-cublas-cu12", version = "12.4.5.8", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cuda-cupti-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cuda-nvrtc-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cuda-runtime-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cudnn-cu12", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cufft-cu12", version = "11.2.1.3", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-curand-cu12", version = "10.3.5.147", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cusolver-cu12", version = "11.6.1.9", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cusparse-cu12", version = "12.3.1.170", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-cusparselt-cu12", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-nccl-cu12", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-nvjitlink-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "nvidia-nvtx-cu12", version = "12.4.127", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "setuptools", marker = "extra == 'extra-9-ramem-cli-retrieval'" },
+    { name = "sympy", marker = "extra == 'extra-9-ramem-cli-retrieval'" },
+    { name = "triton", version = "3.2.0", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-9-ramem-cli-retrieval') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (platform_machine != 'x86_64' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (sys_platform != 'linux' and extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
+    { name = "typing-extensions", marker = "extra == 'extra-9-ramem-cli-retrieval'" },
 ]
 wheels = [
     { url = "https://download-r2.pytorch.org/whl/cu124/torch-2.6.0%2Bcu124-cp312-cp312-linux_x86_64.whl", hash = "sha256:a393b506844035c0dac2f30ea8478c343b8e95a429f06f3b3cadfc7f53adb597", upload-time = "2025-01-30T00:57:08Z" },
@@ -1552,7 +1708,7 @@ name = "tqdm"
 version = "4.69.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/8c/69/40407dfc835517f058b603dbf37a6df094d8582b015a51eddc988febbcb7/tqdm-4.69.0.tar.gz", hash = "sha256:700c5e85dcd5f009dd6222588a29180a193a748247a5d855b4d67db93d79a53b", size = 792569, upload-time = "2026-07-17T18:09:06.2Z" }
 wheels = [
@@ -1585,10 +1741,11 @@ name = "triton"
 version = "3.1.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training'",
+    "extra != 'extra-9-ramem-cli-retrieval' and extra != 'extra-9-ramem-cli-training'",
 ]
 dependencies = [
-    { name = "filelock", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "filelock" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/78/eb/65f5ba83c2a123f6498a3097746607e5b2f16add29e36765305e4ac7fdd8/triton-3.1.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c8182f42fd8080a7d39d666814fa36c5e30cc00ea7eeeb1a2983dbb4c99a0fdc", size = 209551444, upload-time = "2024-10-14T16:05:53.433Z" },
@@ -1623,7 +1780,7 @@ version = "0.27.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-doc" },
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-5-ramem-retrieval' and extra == 'extra-5-ramem-training')" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-training') or (extra == 'extra-9-ramem-cli-retrieval' and extra == 'extra-9-ramem-cli-transformers')" },
     { name = "rich" },
     { name = "shellingham" },
 ]
@@ -1693,6 +1850,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/34/d9/b477fddb68840b570af8b22afe9b035cbc277b5fb7b33dea390617a8b10f/virtualenv-21.6.1.tar.gz", hash = "sha256:15f978b7cd329f24855ff4a0c4b4899cc7678589f49adbdcbbb4d3232e641128", size = 5526620, upload-time = "2026-07-10T19:33:53.312Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c1/7c/4e7225d46d634a0d8d534dd8a6ce0c319d09b4d0cf0337eb314ca4789d8c/virtualenv-21.6.1-py3-none-any.whl", hash = "sha256:afe991df855715a2b2f60edfcc0107ef95a79fdfd8cb4cdaa71603d1c12e463b", size = 5506392, upload-time = "2026-07-10T19:33:51.629Z" },
+]
+
+[[package]]
+name = "wcwidth"
+version = "0.8.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/74/c6428f875774288bec1396f5bfcbc2d925700a4dad61727fd5f2b12f249d/wcwidth-0.8.2.tar.gz", hash = "sha256:91fbef97204b96a3d4d421609b80340b760cf33e26da123ff243d76b1fda8dda", size = 1466253, upload-time = "2026-06-29T18:11:11.601Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/42/3e5985a0a7e57de470b320c6d6a1a67c844f6737a587f3d44dd13d1819e7/wcwidth-0.8.2-py3-none-any.whl", hash = "sha256:d63947694a0539a1d51e01eda7caf800c291020e6cdd7e28ad7b14dd33ad4f85", size = 323166, upload-time = "2026-06-29T18:11:09.888Z" },
 ]
 
 [[package]]

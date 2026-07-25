@@ -1,17 +1,44 @@
 name: ci
+
 on:
   push:
   pull_request:
+
 jobs:
-  checks:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
+          enable-cache: true
       - run: uv sync --extra dev --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy
       - run: uv run pytest
+
+  backend-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --extra dev --locked
+      - run: uv run pytest tests/unit/test_generation_backends.py
+
+  clean-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv build
+      - run: uv venv /tmp/ramem-clean --python 3.12
+      - run: uv pip install --python /tmp/ramem-clean/bin/python dist/*.whl
+      - run: cd /tmp && RAMEM_DATA_DIR=/tmp/ramem-data /tmp/ramem-clean/bin/ramem doctor
