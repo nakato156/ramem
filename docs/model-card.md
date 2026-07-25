@@ -18,6 +18,9 @@ inferencia. El repositorio de modelo debe contener safetensors BF16, tokenizer, 
 GGUF Q4_K_M. La memoria RAG, SQLite y LanceDB forman parte del paquete `ramem-cli`, no de estos
 pesos.
 
+Estado: borrador de ficha para la publicación futura. Los campos y métricas pendientes no deben
+presentarse como artefactos ya publicados.
+
 ## Uso previsto
 
 Responder dentro del prompt controlado de RAMEM, utilizando fragmentos de conversaciones
@@ -48,6 +51,7 @@ Antes de publicar esta ficha se deben adjuntar, sin estimaciones:
 - LongMemEval y LoCoMo con revisión fijada;
 - comparación BF16 frente a GGUF Q4_K_M;
 - tasa de citas válidas;
+- fidelidad semántica revisada; Ragas puede aportar diagnóstico solo después de calibración humana;
 - tokens/s y tiempo al primer token en la CPU de referencia;
 - hardware, prompts, hashes y fecha de cada ejecución.
 
@@ -57,6 +61,9 @@ El modelo puede inventar hechos, citas o interpretar erróneamente conversacione
 citas que no pertenecen al contexto actual, pero una cita válida no garantiza que la conclusión sea
 correcta. El checkpoint está orientado a español y contexto máximo de 4.096 tokens. No contiene por
 sí mismo memoria persistente.
+
+Las métricas históricas de MLQA y SQuAD-es evalúan QA con contexto, no recuperación de memoria. La
+calidad end-to-end debe consultarse en los reportes de release del paquete RAMEM.
 
 ## Licencia
 

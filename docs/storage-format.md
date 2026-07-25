@@ -1,5 +1,7 @@
 # Formato de almacenamiento y recuperación
 
+Versión de esquema implementada: 2.
+
 ## Ubicación
 
 La raíz predeterminada procede de `platformdirs.user_data_path("ramem", "ramem")`. Puede
@@ -12,8 +14,11 @@ ramem.sqlite3-shm
 memory.lance/
 models/ramem-gemma-1b/
 traces/
-prompt-history
 ```
+
+`prompt-history` usa siempre el directorio de datos predeterminado de `platformdirs`; actualmente no
+se mueve con `RAMEM_DATA_DIR`. No contiene respuestas ni memoria indexada, pero puede contener las
+entradas escritas en el REPL y debe incluirse en la política local de privacidad.
 
 No mover ni copiar la base mientras RAMEM está abierto. Para un respaldo coherente, cerrar el CLI y
 copiar `ramem.sqlite3`; `memory.lance` puede omitirse porque se reconstruye.
@@ -40,6 +45,9 @@ Mensajes y chunks son append-only; los triggers impiden `UPDATE`. El borrado de 
 
 Una base con una versión de esquema superior se rechaza sin modificarla.
 
+Restaurar una copia no borra automáticamente la base o el índice que existían antes. Preparar una
+raíz vacía y conservar la copia anterior hasta verificar conteos y búsquedas.
+
 ## Borrar
 
 `ramem session delete UUID --yes` elimina una sesión. En el REPL, `/forget all` exige escribir
@@ -48,3 +56,6 @@ seguridad creadas por el usuario no se eliminan automáticamente.
 
 Las trazas contienen hashes, IDs, conteos, latencias y resultados; no contienen consultas,
 mensajes ni texto recuperado.
+
+El borrado no afecta respaldos, exports, reportes de evaluación ni `prompt-history`. El usuario debe
+administrar explícitamente esas copias.

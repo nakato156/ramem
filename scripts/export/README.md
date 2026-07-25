@@ -1,5 +1,8 @@
 # Exportación para RAMEM V1
 
+Estado: procedimiento preparado; la comparación GGUF/BF16 y el artefacto remoto final siguen
+pendientes y figuran en `docs/release.md`.
+
 1. Fusionar el adaptador con `ramem-export`.
 2. Preparar el directorio compatible con llama.cpp mediante `prepare_gguf_source.py`.
 3. Ejecutar el conversor oficial `convert_hf_to_gguf.py`.

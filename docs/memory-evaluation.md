@@ -3,6 +3,10 @@
 RAMEM separa tres niveles: recuperación, respuesta y gates de sistema. No reemplaza con métricas
 propias los evaluadores oficiales de benchmarks externos.
 
+Estado actual: el runner, los adaptadores y los gates están implementados. El único dataset incluido
+es una muestra smoke de 10 casos; la revisión humana, el holdout y las ejecuciones completas siguen
+pendientes.
+
 ## RaMem-Memory-ES
 
 El esquema JSONL está implementado en `ramem.evaluation.memory`. Cada caso declara categoría,
@@ -59,3 +63,27 @@ Con el mismo dataset, prompt, semilla y generador:
 
 `ramem-release-gates` consume un JSON de métricas y falla con código distinto de cero si cualquier
 umbral del plan V1 no se cumple. No se rellenan valores faltantes con estimaciones.
+
+## Capa opcional Ragas
+
+Ragas complementará esta evaluación con `Faithfulness`, `NoiseSensitivity` y
+`FactualCorrectness` sobre una muestra española revisada y con un juez congelado y calibrado.
+
+Precision y recall por IDs oficiales deben calcularse en el runner RAMEM. Ragas documenta
+`IDBasedContextRecall` e `IDBasedContextPrecision`, pero en 0.4.3 permanecen en la API legacy; no
+conviene convertir una dependencia deprecada en la base de un gate que puede expresarse de forma
+determinista.
+
+No valida de forma equivalente las citas `[D#]`; esa comprobación continúa siendo determinista en
+RAMEM. Tampoco reemplaza la exactitud oficial de LongMemEval/LoCoMo. El contrato, las fases y las
+condiciones para convertir una métrica en gate se detallan en
+[`ragas-evaluation.md`](ragas-evaluation.md).
+
+## Interpretación de reportes
+
+- `ramem-memory-es-dev-smoke.json`: prueba de funcionamiento del runner sobre 10 casos.
+- métricas de MLQA/SQuAD-es: calidad histórica del generador, no calidad de memoria.
+- reporte oficial LongMemEval/LoCoMo: calidad de respuesta en ese benchmark.
+- reporte Ragas: diagnóstico complementario; no es gate hasta estar calibrado.
+- reporte `ramem-release-gates`: agregador final; solo es válido si cada entrada proviene de una
+  evidencia congelada y trazable.

@@ -1,10 +1,14 @@
 # External generation evaluation protocol
 
+> Protocolo histórico y todavía reproducible para evaluar el generador, no la memoria
+> conversacional end-to-end. MLQA external-dev ya fue ejecutado; XQuAD continúa reservado y no debe
+> abrirse por cambios exclusivos del retriever.
+
 ## Purpose
 
-The internal SQuAD-es slice measures task fit but not external generalization. Model selection now
-uses all 500 rows from `facebook/mlqa`, configuration `mlqa.es.es`, split `validation`. The official
-MLQA test split is never downloaded by the automated development workflow.
+The internal SQuAD-es slice measures task fit but not external generalization. The historical model
+selection used all 500 rows from `facebook/mlqa`, configuration `mlqa.es.es`, split `validation`.
+The official MLQA test split is never downloaded by the automated development workflow.
 
 The comparison is paired: base Gemma and the seed-42 RaMem adapter receive identical examples in
 identical deterministic order. Generation is greedy with a 1,024-token input limit and 64 new-token
@@ -28,11 +32,12 @@ silently trigger more training.
 
 ## One-command Lightning execution
 
-After switching the persistent Studio to a T4:
+To reproduce on a frozen T4 environment:
 
 ```bash
 cd /teamspace/studios/this_studio/ramem
-git pull --ff-only origin main
+git fetch origin
+git checkout --detach <FROZEN_COMMIT>
 tmux new-session -d -s ramem-external-eval \
   'bash scripts/evaluate/lightning_t4_external_dev.sh'
 tail -f artifacts/evaluation/t4-external-dev.log
@@ -64,3 +69,7 @@ XQuAD Spanish validation is a secondary, SQuAD-domain holdout. It must run only 
 prompt, decoding, acceptance thresholds, and code revision are frozen. Its downloader requires
 `--release-test`; its wrapper additionally requires `RAMEM_RELEASE_CANDIDATE_FROZEN=yes` and refuses
 to overwrite an existing output directory. Do not use its result to tune the candidate.
+
+Este holdout responde únicamente a la generalización del generador. La publicación de RAMEM exige,
+además, el holdout conversacional descrito en
+[`memory-evaluation.md`](memory-evaluation.md).

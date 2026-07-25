@@ -1,12 +1,17 @@
 # Checklist de release RAMEM V1
 
+Estado al 2026-07-25: implementación funcional completada; publicación y evidencia científica
+pendientes. Una casilla solo se marca con evidencia reproducible, no por existencia de código.
+
 ## Código y paquete
 
-- [ ] Ruff, formato, mypy, unitarias, migraciones, integración y PTY verdes en CI.
-- [ ] `uv build` produce wheel y sdist; instalación en entorno vacío ejecuta `ramem doctor`.
+- [ ] Ruff, formato, mypy, unitarias, migraciones, integración y PTY verdes en Linux CI.
+- [x] `uv build` produce wheel y sdist localmente.
+- [ ] Instalación del wheel en entorno vacío ejecuta `ramem doctor` y el primer turno documentado.
 - [ ] El nombre `ramem-cli` está disponible y el paquete se publica en PyPI.
 - [ ] README reproducido desde una máquina limpia.
 - [ ] Changelog y tag `v1.0.0`.
+- [x] Arquitectura, persistencia, evaluación y decisiones técnicas documentadas.
 
 ## Datos y métricas
 
@@ -17,6 +22,8 @@
 - [ ] ≥80% de exactitud oráculo usando ≤10% de tokens.
 - [ ] Citas válidas ≥0,98.
 - [ ] p95 recuperación+packing ≤1,5 s con 100.000 mensajes.
+- [ ] Si una métrica Ragas se usa como gate: juez/prompts congelados, muestra española anotada y
+  acuerdo humano documentado. Ragas no es un gate obligatorio de V1.
 
 ## Modelo
 
@@ -37,3 +44,6 @@ El archivo generado por `ramem-release-gates` es la evidencia mecánica de los u
 checklist conserva las aprobaciones humanas y publicaciones externas que no pueden automatizarse.
 Copiar `configs/release/metrics-template.json`, reemplazar cada valor con evidencia observada y
 adjuntar el reporte. La ficha de modelo lista para completar está en `docs/model-card.md`.
+
+Los archivos `reports/metrics/*template*` son ejemplos de forma y deben fallar mientras contengan
+valores centinela. El smoke de 10 casos tampoco autoriza marcar gates de datos o rendimiento.

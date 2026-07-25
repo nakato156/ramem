@@ -1,5 +1,9 @@
 # MIRACL retrieval evaluation
 
+> Registro histórico del experimento E02 del retriever documental. El runtime V1 ya usa LanceDB
+> híbrido y un corpus conversacional. Este piloto conserva valor comparativo, pero no demuestra los
+> gates de memoria ni decide por sí solo la configuración actual.
+
 E02 compares SQLite FTS5 BM25, EmbeddingGemma dense retrieval and reciprocal-rank fusion on a
 fixed MIRACL Spanish development slice. Every completed run stores its resolved configuration,
 input hashes, Git commit, seed, package versions, memory, timings, rankings and summary.
@@ -34,3 +38,6 @@ all relevant documents found in that shard, and evaluates only queries whose rel
 available. Its metrics validate implementation and relative behavior; they are not the final E02
 scientific result. The final comparison must use every pinned MIRACL Spanish corpus shard, preferably
 on the Lightning T4, before E03 selects 768, 256 or 128 dimensions.
+
+La selección final para memoria conversacional debe realizarse con RaMem-Memory-ES y los adaptadores
+de LongMemEval/LoCoMo, preservando MIRACL como control secundario de recuperación en español.

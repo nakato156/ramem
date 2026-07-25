@@ -1,5 +1,7 @@
 # Arquitectura RAMEM V1
 
+Estado: implementada en código; validación científica y publicación pendientes.
+
 ## Flujo principal
 
 ```text
@@ -32,6 +34,7 @@ crean solo tras completar la generación.
 | `GeneratorBackend` | streaming/tokenización/cancelación | llama.cpp o Transformers |
 | `ConversationService` | transacción lógica del turno y citas | regla RAMEM |
 | CLI | REPL, Markdown, historial, comandos | Typer, prompt-toolkit, Rich |
+| Evaluación | retrieval, respuesta, sistema y experimentos | runner RAMEM, suites oficiales y Ragas opcional |
 
 La evaluación ponderada de alternativas está en
 [`docs/adr/0004-rag-framework-selection.md`](adr/0004-rag-framework-selection.md). LanceDB nativo
@@ -70,3 +73,28 @@ artefacto publicado. `model pull` resuelve una referencia de Hugging Face a un S
 descarga ese snapshot y valida tamaño y SHA-256 de cada archivo declarado.
 
 Los artefactos de modelo no heredan automáticamente Apache-2.0: conservan los términos de Gemma.
+
+## Evaluación fuera del runtime
+
+La evaluación no participa en una conversación normal:
+
+```text
+salida RAMEM + IDs recuperados + referencias
+  → métricas deterministas RAMEM, incluidos precision/recall por IDs
+  → evaluadores oficiales LongMemEval/LoCoMo
+  → Ragas opcional para jueces semánticos calibrados
+  → ReleaseMetrics → ramem-release-gates
+```
+
+Ragas no sustituye el retriever, LanceDB, los benchmarks oficiales ni la validación determinista de
+citas. Se instalará en un entorno separado porque incorpora dependencias de metaframework que no
+deben ampliar el runtime local. Véase [`ragas-evaluation.md`](ragas-evaluation.md).
+
+## Invariantes
+
+1. SQLite es la única fuente canónica de conversaciones.
+2. Una entrada confirmada se persiste antes de inferir.
+3. El índice vectorial se puede destruir y reconstruir sin perder conversaciones.
+4. El texto recuperado nunca adquiere autoridad de sistema.
+5. Ninguna traza diagnóstica guarda mensajes, consultas o fragmentos recuperados.
+6. Un resultado smoke no se presenta como benchmark de release.

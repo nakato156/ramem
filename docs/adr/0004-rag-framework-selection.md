@@ -13,6 +13,9 @@ completo y reconstruir el índice.
 La prioridad es reutilizar software mantenido y probado. Solo se conservará lógica propia cuando el
 contrato de RAMEM sea deliberadamente distinto.
 
+Esta decisión cubre el **runtime RAG**. Las herramientas de evaluación pueden vivir en un entorno
+aislado; ADR-0005 adopta Ragas bajo ese límite sin convertirlo en orquestador de producción.
+
 ## Matriz ponderada
 
 Escala: 1 (inadecuado) a 5 (excelente). El total es la suma ponderada sobre 5.
@@ -38,13 +41,14 @@ Escala: 1 (inadecuado) a 5 (excelente). El total es la suma ponderada sobre 5.
 - Qdrant local persiste en disco, pero su propia guía lo orienta a cantidades pequeñas de vectores:
   <https://qdrant.tech/documentation/frameworks/langchain/>.
 - LlamaIndex dispone de `QueryFusionRetriever`, BM25 y `LanceDBVectorStore`, pero la prueba de
-  compatibilidad de las versiones actuales (`core 0.14.23`, LanceDB `0.5.0`, BM25 `0.7.1`) requirió
+  compatibilidad realizada el 2026-07-25 (`core 0.14.23`, LanceDB `0.5.0`, BM25 `0.7.1`) requirió
   añadir manualmente `pandas`, no declarado por la integración.
 - LangGraph tiene SQLite checkpointers y recuperación de pasos, pero su Store persistente recomendado
   para producción es Postgres/Redis/Mongo, y el checkpoint completo duplicaría el historial canónico:
   <https://docs.langchain.com/oss/python/langgraph/persistence>.
-- La prueba con LangChain `1.3.14` y `langchain-community 0.4.2` emitió una advertencia oficial de que
-  `langchain-community` está siendo retirado. LanceDB y llama.cpp todavía dependen de esa superficie.
+- La prueba del 2026-07-25 con LangChain `1.3.14` y `langchain-community 0.4.2` emitió una
+  advertencia de deprecación de esa superficie. Una nueva matriz debe repetir estas pruebas, no
+  asumir que sus resultados permanecen estables.
 - Haystack tiene pipelines explícitos y generadores llama.cpp/Hugging Face, pero su chat store
   persistente sigue siendo experimental y la integración LanceDB disponible es comunitaria `0.1.1`
   de 2024: <https://pypi.org/project/lancedb-haystack/>.
@@ -83,3 +87,5 @@ vectorial desde cero.
 - Se mantiene la portabilidad local y el objetivo de 100 000 mensajes sin servidor adicional.
 - La interfaz interna seguirá desacoplada para poder sustituir LanceDB por Qdrant si los benchmarks
   reales demuestran que no cumple recall o latencia.
+- Ragas y cualquier evaluador futuro se mantienen fuera del grafo de dependencias del runtime; véase
+  [`0005-ragas-evaluation.md`](0005-ragas-evaluation.md).

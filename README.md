@@ -5,6 +5,18 @@ SQLite, recupera evidencia relevante de conversaciones anteriores y responde con
 finetuneado mostrando citas `[D1]`, `[D2]`, etc. No ejecuta comandos, no inspecciona repositorios y
 no modifica archivos.
 
+## Estado del proyecto
+
+La implementación funcional de V1 está completa en la rama de desarrollo. El código incluye
+almacenamiento conversacional, recuperación híbrida, REPL, backends de generación, administración,
+adaptadores de benchmark y gates automatizados. **Esto no equivale a una release publicada**:
+RaMem-Memory-ES sigue siendo un borrador de 10 casos, faltan el holdout revisado, las mediciones con
+100.000 mensajes, la comparación GGUF/BF16 y la publicación en PyPI/Hugging Face.
+
+El estado verificable, los pendientes y la relación entre documentos están en
+[`docs/README.md`](docs/README.md). No se deben interpretar métricas smoke como evidencia de
+release.
+
 ## Instalación
 
 RAMEM requiere Python 3.12. El nombre del paquete en PyPI es `ramem-cli` —`ramem` pertenece a otro
@@ -82,6 +94,9 @@ Transformers solo se activa explícitamente con `generation.provider: transforme
 sin descargar modelos se admite `retrieval.embedding_provider: hashing`; no es una configuración
 de release.
 
+La precedencia, las rutas y todas las claves están documentadas en
+[`docs/configuration.md`](docs/configuration.md).
+
 ## Evaluación
 
 ```bash
@@ -97,6 +112,13 @@ El dataset incluido es un borrador de desarrollo y no sustituye la revisión hum
 LongMemEval y LoCoMo se ejecutan y califican con sus herramientas oficiales; el protocolo está en
 [evaluación de memoria](docs/memory-evaluation.md). No se publica una cifra de release hasta
 cumplir todos los gates.
+
+Ragas se adoptará únicamente como dependencia opcional de evaluación semántica. Precision y recall
+por IDs seguirán en el runner determinista de RAMEM porque las variantes ID-based de Ragas aún
+pertenecen a su API legacy. Las métricas con juez LLM solo podrán convertirse en gates después de
+calibrarlas contra revisión humana en español. La decisión y el plan de integración están en
+[evaluación con Ragas](docs/ragas-evaluation.md) y
+[ADR-0005](docs/adr/0005-ragas-evaluation.md).
 
 ## Desarrollo
 
