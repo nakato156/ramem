@@ -1,7 +1,11 @@
 # Ejecución de RaMem en Lightning AI
 
-Esta es la secuencia canónica. Los datos se descargan dentro de Lightning; nunca se suben desde el
-equipo local ni se incluyen en Git.
+> Runbook de mantenimiento del generador y experimentos GPU. No es el camino principal del CLI V1
+> ni prueba los gates de memoria. El entrenamiento descrito ya produjo el checkpoint histórico;
+> repetirlo solo está justificado por un diagnóstico concreto.
+
+Los datos se descargan dentro de Lightning; nunca se suben desde el equipo local ni se incluyen en
+Git. Cada ejecución nueva debe fijar una rama, tag o SHA y registrarlo antes de consumir GPU.
 
 ## 0. Preparación única fuera de Lightning
 
@@ -16,11 +20,11 @@ cp .env.example .env
    - `google/gemma-3-1b-it`
 3. Crear un token de Hugging Face con permiso de lectura y escribirlo en `HF_TOKEN` dentro de
    `.env`.
-4. Crear el repositorio remoto y publicar el código:
+4. Si se reproduce desde un fork nuevo, crear el repositorio remoto y publicar el código:
 
 ```bash
 git add .
-git commit -m "Initialize RaMem real training pipeline"
+git commit -m "Initialize RAMEM training pipeline"
 git remote add origin <URL_DEL_REPOSITORIO>
 git push -u origin main
 ```
@@ -189,7 +193,10 @@ Al volver a encender una T4, ejecutar una única sesión persistente:
 
 ```bash
 cd /teamspace/studios/this_studio/ramem
-git pull --ff-only origin main
+git fetch origin
+git checkout --detach <SHA_CONGELADO>
+git status --short
+git rev-parse HEAD
 tmux new-session -d -s ramem-external-eval \
   'bash scripts/evaluate/lightning_t4_external_dev.sh'
 tail -f artifacts/evaluation/t4-external-dev.log
@@ -208,7 +215,8 @@ ni sobrescribir el resultado.
 
 ```bash
 cd /home/zeus/content/ramem
-git pull --ff-only
+git fetch origin
+git checkout --detach <SHA_CONGELADO>
 uv sync --extra dev --extra training
 uv run ramem doctor
 ```
@@ -220,15 +228,17 @@ dataset se debe usar una ruta versionada nueva; nunca sobrescribir `data/raw`.
 
 Desde el equipo local, después de validar y crear un commit:
 
-```bash
-git push origin main
-```
+Publicar la rama de trabajo normal desde local y crear un tag o registrar el SHA que se ejecutará.
+No hacer experimentos científicos contra una referencia móvil como `main`.
 
 En Lightning, antes de ejecutar cualquier trabajo:
 
 ```bash
 cd /home/zeus/content/ramem
-git pull --ff-only origin main
+git fetch origin
+git checkout --detach <SHA_CONGELADO>
+git status --short
+git rev-parse HEAD
 ```
 
 No volver a transferir el proyecto con `scp`. Los datos y modelos permanecen únicamente en

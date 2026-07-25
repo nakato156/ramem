@@ -1,7 +1,13 @@
-.PHONY: install install-training lint typecheck test check download prepare smoke train
+.PHONY: install install-llama install-transformers install-training lint typecheck test check build benchmark download prepare smoke train
 
 install:
 	uv sync --extra dev
+
+install-llama:
+	uv sync --extra dev --extra llama
+
+install-transformers:
+	uv sync --extra dev --extra transformers
 
 install-training:
 	uv sync --extra dev --extra training
@@ -17,6 +23,12 @@ test:
 	uv run pytest
 
 check: lint typecheck test
+
+build: check
+	uv build
+
+benchmark:
+	uv run ramem benchmark --dataset data/benchmarks/ramem-memory-es-dev.jsonl
 
 download:
 	uv run ramem-download --dataset squad-es

@@ -1,8 +1,11 @@
 # Evaluation
 
-`lightning_t4_external_dev.sh` is the next approved run. It downloads MLQA Spanish validation,
-audits exact context and context-question-pair overlap with SQuAD-es train, performs the paired
-base/adapter evaluation, and writes the precommitted acceptance analysis.
+Estos scripts mantienen la evaluación histórica del generador. MLQA external-dev ya produjo la
+evidencia registrada en `docs/resume-fase1.md`; repetirlo requiere una nueva pregunta experimental y
+un commit congelado.
 
 `lightning_t4_final_holdout.sh` is deliberately locked and must not run until the release candidate
 is frozen. See `docs/EXTERNAL_EVALUATION.md`.
+
+La evaluación de memoria V1 usa `ramem benchmark`, los adaptadores oficiales y
+`ramem-release-gates`; véase `docs/memory-evaluation.md`.

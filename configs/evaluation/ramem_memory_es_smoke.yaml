@@ -1,0 +1,32 @@
+version: 1
+retrieval:
+  mode: hybrid
+  lexical_k: 20
+  dense_k: 20
+  final_k: 10
+  rrf_k: 60
+  embedding_dimension: 256
+  embedding_model_id: ramem/hashing-test-only
+  embedding_provider: hashing
+  chunk_tokens: 512
+  memory_token_budget: 2048
+  mmr_lambda: 0.75
+  near_duplicate_threshold: 0.92
+context:
+  token_budget: 2048
+  chars_per_token: 4
+  recent_token_budget: 768
+  instruction_token_budget: 256
+  total_token_budget: 4096
+generation:
+  provider: auto
+  model_id: nakato156/ramem-gemma-1b
+  model_revision: main
+  gguf_filename: ramem-gemma-1b-q4_k_m.gguf
+  load_in_4bit: true
+  max_new_tokens: 1024
+  context_length: 4096
+  temperature: 0.0
+  top_p: 1.0
+  gpu_layers: 0
+  seed: 42

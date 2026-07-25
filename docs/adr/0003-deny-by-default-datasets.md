@@ -1,7 +1,9 @@
-# ADR 0003: Deny-by-default datasets
+# ADR 0003: datasets bloqueados por defecto
 
-Status: accepted
+- Estado: aceptado
 
-Every public dataset begins blocked. A loader may access it only after its revision, license,
-authorized split and checksum are recorded. Training callers receive an explicit error for
-test-only sources. CI has no dataset dependency; real rows are downloaded only by explicit commands.
+Todo dataset público comienza bloqueado. Un loader solo puede acceder después de registrar revisión,
+licencia, split autorizado y checksum. El entrenamiento recibe un error explícito ante fuentes
+reservadas para test. CI no depende de datasets externos; las filas reales se descargan únicamente
+mediante comandos explícitos. La misma regla aplica a datasets generados con Ragas: solo entran en
+development tras revisión y nunca en un holdout ya observado.

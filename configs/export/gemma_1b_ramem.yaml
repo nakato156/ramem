@@ -1,4 +1,5 @@
 base_model_id: google/gemma-3-1b-it
+base_model_revision: main
 adapter_path: artifacts/training/gemma-1b-t4-seed42/adapter-final
 output_dir: artifacts/export/gemma-1b-ramem-seed42
 evaluation_summary: artifacts/evaluation/gemma-1b-t4-seed42/summary.json

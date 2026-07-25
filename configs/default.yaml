@@ -6,16 +6,34 @@ retrieval:
   final_k: 5
   rrf_k: 60
   embedding_dimension: 256
+  embedding_model_id: google/embeddinggemma-300m
+  embedding_provider: embeddinggemma
+  chunk_tokens: 512
+  memory_token_budget: 2048
+  mmr_lambda: 0.75
+  near_duplicate_threshold: 0.92
 context:
-  token_budget: 1024
+  token_budget: 2048
   chars_per_token: 4
+  recent_token_budget: 768
+  instruction_token_budget: 256
+  total_token_budget: 4096
 generation:
-  provider: transformers
-  model_id: google/gemma-3-1b-it
+  provider: auto
+  model_id: nakato156/ramem-gemma-1b
+  model_revision: main
+  gguf_filename: ramem-gemma-1b-q4_k_m.gguf
+  gguf_path: null
   adapter_path: null
   load_in_4bit: true
-  max_new_tokens: 256
+  max_new_tokens: 1024
+  context_length: 4096
+  temperature: 0.0
+  top_p: 1.0
+  gpu_layers: 0
+  seed: 42
 storage:
-  index_path: artifacts/ramem.sqlite3
+  index_path: null
+  lance_path: null
 telemetry:
-  traces_dir: artifacts/traces
+  traces_dir: null

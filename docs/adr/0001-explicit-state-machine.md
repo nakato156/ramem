@@ -1,6 +1,8 @@
-# ADR 0001: Explicit state machine
+# ADR 0001: máquina de estados explícita
 
-Status: accepted
+- Estado: aceptado
+- Alcance: orquestación del runtime
 
-Use a typed, explicit state machine in the core instead of an agent framework. This keeps module
-boundaries measurable, makes traces reproducible, and permits one-variable-at-a-time ablations.
+Usar una máquina de estados tipada y explícita en el núcleo en vez de un framework de agentes. Esto
+mantiene medibles los límites entre módulos, hace reproducibles las trazas y permite ablaciones de
+una sola variable. ADR-0004 concreta los componentes especializados usados por la implementación.

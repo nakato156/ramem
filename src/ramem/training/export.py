@@ -16,6 +16,7 @@ class ExportConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     base_model_id: str
+    base_model_revision: str = "main"
     adapter_path: Path
     output_dir: Path
     evaluation_summary: Path | None = None
@@ -51,6 +52,7 @@ def _preferred_export_dtype(torch_module: Any, *, use_cuda: bool, requested: str
 def export_merged(config: ExportConfig) -> dict[str, Any]:
     try:
         import torch  # type: ignore[import-not-found]
+        from huggingface_hub import HfApi
         from peft import PeftModel  # type: ignore[import-not-found]
         from transformers import (  # type: ignore[import-not-found]
             AutoModelForCausalLM,
@@ -70,8 +72,19 @@ def export_merged(config: ExportConfig) -> dict[str, Any]:
         raise RuntimeError("CUDA export requested but no CUDA device is available")
     use_cuda = config.device == "cuda" or (config.device == "auto" and cuda_available)
     dtype = _preferred_export_dtype(torch, use_cuda=use_cuda, requested=config.dtype)
+    resolved_base_revision = (
+        HfApi(token=token)
+        .model_info(
+            config.base_model_id,
+            revision=config.base_model_revision,
+        )
+        .sha
+    )
+    if not resolved_base_revision:
+        raise RuntimeError("Could not resolve the base model to an immutable revision")
     base = AutoModelForCausalLM.from_pretrained(
         config.base_model_id,
+        revision=resolved_base_revision,
         token=token,
         device_map={"": 0} if use_cuda else "cpu",
         dtype=dtype,
@@ -89,6 +102,7 @@ def export_merged(config: ExportConfig) -> dict[str, Any]:
     manifest: dict[str, Any] = {
         "format": "merged_transformers_safetensors",
         "base_model_id": config.base_model_id,
+        "source_model_revision": resolved_base_revision,
         "adapter_path": str(config.adapter_path),
         "adapter_sha256": _sha256(config.adapter_path / "adapter_model.safetensors"),
         "git_commit": _git_commit(),

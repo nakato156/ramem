@@ -2,6 +2,10 @@
 
 Ultima actualizacion: 2026-07-23 (America/Lima).
 
+> Documento histórico de la fase del generador. Desde 2026-07-25 el RAG conversacional V1 está
+> implementado; consultar [`HANDOFF.md`](HANDOFF.md) para el estado global actual. Las cifras de este
+> documento no miden memoria ni sustituyen los gates de release.
+
 ## Alcance
 
 Esta fase evalua solamente el modelo finetuneado de QA en espanol con respuestas citadas. No incluye
@@ -145,6 +149,10 @@ Faltan pruebas explicitas de:
 
 ## Ragas en esta fase
 
+> Esta propuesta histórica queda subordinada a
+> [`ragas-evaluation.md`](ragas-evaluation.md). En particular, la integración actual evita las
+> métricas ID-based legacy y usa la API `collections` solo para evaluación semántica.
+
 Ragas puede ayudar como capa complementaria para validar fidelidad semantica del modelo finetuneado,
 especialmente en los casos donde la metrica deterministica solo valida formato de cita.
 
@@ -179,7 +187,8 @@ Secuencia recomendada:
 
 ## Estado de validacion tecnica
 
-El 2026-07-23 quedaron sincronizados local, GitHub y Lightning CPU.
+El 2026-07-23 quedaron sincronizados local, GitHub y Lightning CPU para el commit histórico
+indicado a continuación. Esta afirmación no describe la rama V1 actual.
 
 Commit verificado:
 
