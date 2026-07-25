@@ -40,6 +40,7 @@ def test_repl_starts_and_exits_through_pseudoterminal(tmp_path: Path) -> None:
     child.send("/exit")
     child.send("\x1b\r")
     child.expect(pexpect.EOF)
+    child.close()
 
     assert child.exitstatus == 0
 
